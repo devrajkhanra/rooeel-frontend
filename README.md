@@ -1,73 +1,128 @@
-# React + TypeScript + Vite
+# Frontend-Specific Principles
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Separation of Concerns (SoC)**: Frontend code is divided into distinct layers or components that address specific functions such as presentation, business logic, and data management. This enhances code readability and testability.
 
-Currently, two official plugins are available:
+**Single Responsibility Principle (SRP)**: Each frontend component or module should have one clear responsibility, such as rendering UI elements or managing state, making code easier to maintain and test.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**User Experience Focus**: Emphasis is placed on responsiveness, accessibility, fast loading times, and smooth interactions to ensure an inclusive and efficient UI.
 
-## React Compiler
+**Modularity and Reusability**: Creating small, reusable, well-encapsulated components is a cornerstone of modern frontend architecture.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Maintainability and Consistency**: Code should follow consistent structure and style, enhancing readability and long-term maintenance.
 
-## Expanding the ESLint configuration
+# NestJS Application
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+A NestJS application with Authentication, Admin, and User modules.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Environment Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the root directory (see `.env.example` for reference):
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+DATABASE_URL="postgresql://user:password@localhost:5432/rooeel?schema=public"
+JWT_SECRET="your-secret-key-change-in-production"
+JWT_EXPIRATION="7d"
 ```
+
+## Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run migrations (if using a database)
+npx prisma migrate dev
+```
+
+## Running the app
+
+```bash
+# development
+npm run start
+
+# watch mode
+npm run start:dev
+
+# production mode
+npm run start:prod
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Modules
+
+- **AuthModule**: Authentication module with JWT-based authentication
+  - Register, login, and logout endpoints
+  - Password hashing with bcrypt
+  - JWT token generation and validation
+  - Token blacklist for logout functionality
+
+- **UserModule**: User management module
+  - Protected user endpoints requiring authentication
+
+- **ProjectModule**: Project management module
+  - Protected CRUD endpoints for projects
+
+- **AdminModule**: Admin functionality module
+  - Controller: `/admin` endpoint
+  - Service: AdminService with basic functionality
+
+## API Endpoints
+
+### Authentication
+
+- `POST /auth/register` - Register a new user
+  - Body: `{ "email": "user@example.com", "password": "password123", "name": "John Doe" }`
+  - Returns: User object (without password)
+
+- `POST /auth/login` - Login with email and password
+  - Body: `{ "email": "user@example.com", "password": "password123" }`
+  - Returns: `{ "accessToken": "jwt-token", "user": { ... } }`
+
+- `POST /auth/logout` - Logout and invalidate the current JWT token (Protected)
+  - Headers: `Authorization: Bearer <token>`
+  - Returns: `{ "message": "Logged out successfully" }`
+
+### User (Protected - Requires JWT Token)
+
+- `GET /user` - Get all users
+  - Headers: `Authorization: Bearer <token>`
+  
+- `GET /user/profile` - Get current user profile
+  - Headers: `Authorization: Bearer <token>`
+  
+- `GET /user/:id` - Get user by ID
+  - Headers: `Authorization: Bearer <token>`
+
+### Project (Protected - Requires JWT Token)
+
+- `POST /project` - Create a project
+  - Headers: `Authorization: Bearer <token>`
+  - Body: `{ "name": "My Project", "description": "Optional" }`
+
+- `GET /project` - List your projects
+  - Headers: `Authorization: Bearer <token>`
+
+- `GET /project/:id` - Get a project by ID (must be owner)
+  - Headers: `Authorization: Bearer <token>`
+
+- `PATCH /project/:id` - Update a project (must be owner)
+  - Headers: `Authorization: Bearer <token>`
+  - Body: `{ "name": "New Name", "description": "Optional" }`
+
+- `DELETE /project/:id` - Delete a project (must be owner)
+  - Headers: `Authorization: Bearer <token>`
+
+### Admin
+
+- `GET /admin` - Returns admin information

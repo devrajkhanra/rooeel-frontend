@@ -1,9 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { LogOut, User, Home, Users } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/Button';
 import { formatName, getInitials } from '@/utils/format';
 
 export const Header: React.FC = () => {
@@ -26,20 +25,6 @@ export const Header: React.FC = () => {
                         </div>
                         <span className="text-xl font-bold gradient-text">Rooeel</span>
                     </Link>
-
-                    {/* Navigation */}
-                    <nav className="hidden md:flex items-center gap-1">
-                        <Link to="/dashboard">
-                            <Button variant="ghost" size="sm" leftIcon={<Home className="h-4 w-4" />}>
-                                Dashboard
-                            </Button>
-                        </Link>
-                        <Link to="/admin">
-                            <Button variant="ghost" size="sm" leftIcon={<Users className="h-4 w-4" />}>
-                                Admins
-                            </Button>
-                        </Link>
-                    </nav>
 
                     {/* User menu */}
                     {user && (

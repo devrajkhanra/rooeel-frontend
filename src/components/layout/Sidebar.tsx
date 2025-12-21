@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home } from 'lucide-react';
+import { Home, Users } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface NavItem {
@@ -14,6 +14,11 @@ const navItems: NavItem[] = [
         label: 'Dashboard',
         icon: <Home className="h-5 w-5" />,
         path: '/dashboard',
+    },
+    {
+        label: 'Users',
+        icon: <Users className="h-5 w-5" />,
+        path: '/users',
     },
 ];
 

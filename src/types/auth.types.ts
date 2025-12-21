@@ -38,14 +38,3 @@ export interface SignupResponse {
         createdAt: string;
     };
 }
-
-export interface UserSignupResponse {
-    access_token: string;
-    user: {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email: string;
-        createdAt: string;
-    };
-}

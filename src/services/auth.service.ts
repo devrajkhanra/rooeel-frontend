@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import { apiClient } from './api.client';
-import type { AuthUser, LoginCredentials, SignupCredentials, AuthResponse, SignupResponse, UserSignupResponse } from '@/types/auth.types';
+import type { AuthUser, LoginCredentials, SignupCredentials, AuthResponse, SignupResponse } from '@/types/auth.types';
 import { STORAGE_KEYS } from '@/config/constants';
 
 export const authService = {
@@ -67,22 +67,11 @@ export const authService = {
         }
     },
 
-    // User Signup
-    userSignup: async (credentials: SignupCredentials): Promise<{ user: AuthUser; token: string }> => {
-        const response = await apiClient.post<UserSignupResponse>('/auth/user/signup', credentials);
-        const { access_token, user } = response.data;
-
-        const authUser: AuthUser = {
-            ...user,
-            role: 'user', // Enforce user role
-        };
-
-        // Store in localStorage
-        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, access_token);
-        localStorage.setItem(STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser));
-
-        return { user: authUser, token: access_token };
-    },
+    /**
+     * NOTE: Users cannot self-register.
+     * Users must be created by admins using the POST /user endpoint.
+     * Once created, users can login using userLogin() method below.
+     */
 
     // User Login
     userLogin: async (credentials: LoginCredentials): Promise<{ user: AuthUser; token: string }> => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAdmins, useDeleteAdmin } from '@/hooks/useAdmins';
+import { authService } from '@/services/auth.service';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -13,8 +14,15 @@ export const AdminListPage: React.FC = () => {
     const navigate = useNavigate();
     const { data: admins, isLoading, error } = useAdmins();
     const deleteAdmin = useDeleteAdmin();
+    const currentUser = authService.getCurrentUser();
 
     const handleDelete = async (id: number) => {
+        // Prevent admin from deleting themselves
+        if (currentUser && id === currentUser.id) {
+            alert('You cannot delete your own account.');
+            return;
+        }
+
         if (window.confirm('Are you sure you want to delete this admin?')) {
             try {
                 await deleteAdmin.mutateAsync(id);
@@ -103,7 +111,9 @@ export const AdminListPage: React.FC = () => {
                                             size="sm"
                                             leftIcon={<Trash2 className="h-4 w-4" />}
                                             onClick={() => handleDelete(admin.id)}
+                                            disabled={currentUser?.id === admin.id}
                                             isLoading={deleteAdmin.isPending}
+                                            title={currentUser?.id === admin.id ? 'You cannot delete your own account' : ''}
                                         >
                                             Delete
                                         </Button>

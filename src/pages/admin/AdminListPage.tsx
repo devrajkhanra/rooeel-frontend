@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { useAdmins, useDeleteAdmin } from '@/hooks/useAdmins';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -54,30 +54,19 @@ export const AdminListPage: React.FC = () => {
 
     return (
         <div className="container py-8">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold mb-2">Admin Management</h1>
-                    <p className="text-[var(--color-text-secondary)]">
-                        Manage administrator accounts
-                    </p>
-                </div>
-                <Button
-                    leftIcon={<Plus className="h-4 w-4" />}
-                    onClick={() => navigate('/admin/new')}
-                >
-                    Create Admin
-                </Button>
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold mb-2">Admin Management</h1>
+                <p className="text-[var(--color-text-secondary)]">
+                    Manage administrator accounts. Admins can only be created through the signup process.
+                </p>
             </div>
 
             {admins && admins.length === 0 ? (
                 <Card>
                     <CardContent className="py-12 text-center">
-                        <p className="text-[var(--color-text-secondary)] mb-4">
-                            No admins found
+                        <p className="text-[var(--color-text-secondary)]">
+                            No admins found. Admins can only be created through the signup process.
                         </p>
-                        <Button onClick={() => navigate('/admin/new')}>
-                            Create First Admin
-                        </Button>
                     </CardContent>
                 </Card>
             ) : (

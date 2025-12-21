@@ -6,7 +6,6 @@ export const ROUTES = {
     DASHBOARD: '/dashboard',
     ADMIN_LIST: '/admin',
     ADMIN_DETAIL: '/admin/:id',
-    ADMIN_CREATE: '/admin/new',
     ADMIN_EDIT: '/admin/:id/edit',
 } as const;
 

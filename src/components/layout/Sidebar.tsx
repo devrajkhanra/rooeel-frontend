@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface SidebarProps {
@@ -22,11 +22,6 @@ const navItems: NavItem[] = [
         label: 'Dashboard',
         icon: <Home className="h-5 w-5" />,
         path: '/dashboard',
-    },
-    {
-        label: 'Admins',
-        icon: <Users className="h-5 w-5" />,
-        path: '/admin',
     },
 ];
 

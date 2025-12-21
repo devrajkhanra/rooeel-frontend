@@ -5,7 +5,6 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { AdminListPage } from './pages/admin/AdminListPage';
 import { AdminEditPage } from './pages/admin/AdminEditPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -34,7 +33,6 @@ function App() {
             <Route element={<AppLayout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/admin" element={<AdminListPage />} />
               <Route path="/admin/:id/edit" element={<AdminEditPage />} />
             </Route>
           </Route>

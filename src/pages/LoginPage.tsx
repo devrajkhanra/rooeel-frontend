@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { loginSchema, type LoginFormData } from '@/utils/validation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
@@ -37,24 +36,22 @@ export const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-bg)] via-[var(--color-bg-secondary)] to-[var(--color-bg)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_50%)]" />
-
-            {/* Login card */}
-            <Card className="w-full max-w-md relative z-10 animate-scale-in">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center">
-                        <LogIn className="h-6 w-6 text-white" />
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-background)]">
+            <div className="w-full max-w-md">
+                {/* Logo */}
+                <div className="mb-8 text-center">
+                    <div className="inline-flex h-10 w-10 rounded-md bg-[var(--color-primary)] items-center justify-center mb-4">
+                        <span className="text-black font-bold text-lg">R</span>
                     </div>
-                    <CardTitle className="text-2xl gradient-text">Welcome to Rooeel</CardTitle>
-                    <CardDescription>Sign in to your admin account</CardDescription>
-                </CardHeader>
-                <CardContent>
+                    <h1 className="text-xl font-semibold mb-1">Welcome to Rooeel</h1>
+                    <p className="text-sm text-[var(--color-text-secondary)]">Sign in to your account</p>
+                </div>
+
+                {/* Login form */}
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         {error && (
-                            <div className="p-3 rounded-lg bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
+                            <div className="p-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
                                 {error}
                             </div>
                         )}
@@ -62,7 +59,7 @@ export const LoginPage: React.FC = () => {
                         <Input
                             label="Email"
                             type="email"
-                            placeholder="admin@example.com"
+                            placeholder="you@example.com"
                             leftIcon={<Mail className="h-4 w-4" />}
                             error={errors.email?.message}
                             {...register('email')}
@@ -80,27 +77,25 @@ export const LoginPage: React.FC = () => {
                         <Button
                             type="submit"
                             className="w-full"
-                            size="lg"
                             isLoading={isLoading}
                         >
                             Sign In
                         </Button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-[var(--color-text-tertiary)]">
-                        <p className="mb-2">Demo: Use any admin email from the backend</p>
+                    <div className="mt-6 text-center text-xs text-[var(--color-text-tertiary)]">
                         <p>
                             Don't have an account?{' '}
                             <Link
                                 to="/signup"
-                                className="text-[var(--color-primary)] hover:text-[var(--color-primary-light)] font-medium"
+                                className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
                             >
-                                Create one
+                                Sign up
                             </Link>
                         </p>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 };

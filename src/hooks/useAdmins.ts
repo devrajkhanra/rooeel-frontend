@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminService } from '@/services/admin.service';
-import type { CreateAdminDto, UpdateAdminDto } from '@/types/api.types';
+import type { UpdateAdminDto } from '@/types/api.types';
 import { QUERY_KEYS } from '@/config/constants';
 
 // Fetch all admins
@@ -20,17 +20,11 @@ export const useAdmin = (id: number) => {
     });
 };
 
-// Create admin mutation
-export const useCreateAdmin = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: CreateAdminDto) => adminService.createAdmin(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.ADMINS] });
-        },
-    });
-};
+/**
+ * NOTE: Admin creation is not available through this hook.
+ * Admins can ONLY be created through the /auth/signup endpoint.
+ * Use authService.signup() to create new admins.
+ */
 
 // Update admin mutation
 export const useUpdateAdmin = () => {

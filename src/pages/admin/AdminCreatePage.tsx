@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowLeft, Save } from 'lucide-react';
-import { useCreateAdmin } from '@/hooks/useAdmins';
+import { authService } from '@/services/auth.service';
 import { adminSchema, type AdminFormData } from '@/utils/validation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -11,8 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export const AdminCreatePage: React.FC = () => {
     const navigate = useNavigate();
-    const createAdmin = useCreateAdmin();
     const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
@@ -25,10 +25,14 @@ export const AdminCreatePage: React.FC = () => {
     const onSubmit = async (data: AdminFormData) => {
         try {
             setError(null);
-            await createAdmin.mutateAsync(data);
+            setIsLoading(true);
+            // Use auth signup endpoint to create admin
+            await authService.signup(data);
             navigate('/admin');
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to create admin');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -91,7 +95,7 @@ export const AdminCreatePage: React.FC = () => {
                             <Button
                                 type="submit"
                                 leftIcon={<Save className="h-4 w-4" />}
-                                isLoading={createAdmin.isPending}
+                                isLoading={isLoading}
                             >
                                 Create Admin
                             </Button>

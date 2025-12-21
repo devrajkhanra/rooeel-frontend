@@ -18,5 +18,7 @@ export const STORAGE_KEYS = {
 export const QUERY_KEYS = {
     ADMINS: 'admins',
     ADMIN: 'admin',
+    USERS: 'users',
+    USER: 'user',
     CURRENT_USER: 'currentUser',
 } as const;

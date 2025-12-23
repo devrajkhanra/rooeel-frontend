@@ -7,8 +7,10 @@ import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { UserListPage } from './pages/user/UserListPage';
 import { MyRequestsPage } from './pages/user/MyRequestsPage';
+import { UserProjectsPage } from './pages/user/UserProjectsPage';
 import { AdminEditPage } from './pages/admin/AdminEditPage';
 import { AdminRequestsPage } from './pages/admin/AdminRequestsPage';
+import { AdminProjectsPage } from './pages/admin/AdminProjectsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LoggerTest } from './components/LoggerTest';
 import { TokenDebugger } from './components/TokenDebugger';
@@ -40,8 +42,10 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/users" element={<UserListPage />} />
               <Route path="/my-requests" element={<MyRequestsPage />} />
+              <Route path="/projects" element={<UserProjectsPage />} />
               <Route path="/admin/:id/edit" element={<AdminEditPage />} />
               <Route path="/admin/requests" element={<AdminRequestsPage />} />
+              <Route path="/admin/projects" element={<AdminProjectsPage />} />
             </Route>
           </Route>
 

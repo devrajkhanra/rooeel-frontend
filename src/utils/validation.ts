@@ -79,3 +79,20 @@ export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type RequestFormData = z.infer<typeof requestSchema>;
+
+// Project validation schema
+export const projectSchema = z.object({
+    name: z.string().min(3, 'Project name must be at least 3 characters').max(100, 'Project name too long'),
+    description: z.string().min(10, 'Description must be at least 10 characters').optional().or(z.literal('')),
+    status: z.enum(['active', 'inactive', 'completed']).optional(),
+});
+
+export const updateProjectSchema = projectSchema.partial();
+
+export const assignUserSchema = z.object({
+    userId: z.number().positive('Please select a valid user'),
+});
+
+export type ProjectFormData = z.infer<typeof projectSchema>;
+export type UpdateProjectFormData = z.infer<typeof updateProjectSchema>;
+export type AssignUserFormData = z.infer<typeof assignUserSchema>;

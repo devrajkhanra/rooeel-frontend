@@ -1,68 +1,95 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { LogOut, User } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { formatName, getInitials } from '@/utils/format';
+import { Breadcrumbs, type BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+
+const getBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
+    const paths = pathname.split('/').filter(Boolean);
+    const breadcrumbs: BreadcrumbItem[] = [];
+
+    // Map routes to breadcrumb labels
+    const routeLabels: Record<string, string> = {
+        dashboard: 'Dashboard',
+        users: 'Users',
+        'my-requests': 'My Requests',
+        projects: 'My Projects',
+        admin: 'Admin',
+        requests: 'Requests',
+    };
+
+    paths.forEach((path, index) => {
+        const href = '/' + paths.slice(0, index + 1).join('/');
+        const label = routeLabels[path] || path.charAt(0).toUpperCase() + path.slice(1);
+        breadcrumbs.push({ label, href });
+    });
+
+    return breadcrumbs;
+};
 
 export const Header: React.FC = () => {
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user, logout } = useAuth();
+    const [showUserMenu, setShowUserMenu] = React.useState(false);
 
-    const handleLogout = async () => {
-        await logout();
+    const breadcrumbs = getBreadcrumbs(location.pathname);
+
+    const handleLogout = () => {
+        logout();
         navigate('/login');
     };
 
     return (
-        <header className="sticky top-0 z-[var(--z-sticky)] border-b border-[var(--color-border)] bg-[var(--color-header)] h-14">
+        <header className="h-14 border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-0 z-40">
             <div className="h-full px-6 flex items-center justify-between">
-                {/* Breadcrumb / Title */}
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-[var(--color-text)]">Rooeel</span>
+                {/* Breadcrumbs */}
+                <div className="flex-1">
+                    {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
                 </div>
 
-                {/* User menu */}
-                {user && (
-                    <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                            <button className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors">
-                                <div className="h-7 w-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
-                                    <span className="text-black text-xs font-medium">
-                                        {getInitials(user.firstName, user.lastName)}
-                                    </span>
-                                </div>
-                                <div className="hidden sm:block text-left">
-                                    <p className="text-xs font-medium text-[var(--color-text)]">{formatName(user.firstName, user.lastName)}</p>
-                                </div>
-                            </button>
-                        </DropdownMenu.Trigger>
+                {/* User Menu */}
+                <div className="relative">
+                    <button
+                        onClick={() => setShowUserMenu(!showUserMenu)}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
+                    >
+                        <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                            <User className="h-4 w-4 text-black" />
+                        </div>
+                        <span className="text-sm font-medium hidden sm:inline">
+                            {user?.email}
+                        </span>
+                        <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                    </button>
 
-                        <DropdownMenu.Portal>
-                            <DropdownMenu.Content
-                                className="min-w-[200px] bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] shadow-lg p-1 z-[var(--z-dropdown)] animate-slide-down"
-                                sideOffset={5}
-                            >
-                                <div className="px-3 py-2 border-b border-[var(--color-border)] mb-1">
-                                    <p className="text-xs font-medium text-[var(--color-text)]">{formatName(user.firstName, user.lastName)}</p>
-                                    <p className="text-xs text-[var(--color-text-tertiary)]">{user.email}</p>
+                    {/* Dropdown Menu */}
+                    {showUserMenu && (
+                        <>
+                            <div
+                                className="fixed inset-0 z-10"
+                                onClick={() => setShowUserMenu(false)}
+                            />
+                            <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg z-20 animate-slide-down">
+                                <div className="p-3 border-b border-[var(--color-border)]">
+                                    <p className="text-sm font-medium">{user?.email}</p>
+                                    <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5 capitalize">
+                                        {user?.role}
+                                    </p>
                                 </div>
-                                <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-[var(--color-surface-hover)] cursor-pointer outline-none">
-                                    <User className="h-4 w-4" />
-                                    Profile
-                                </DropdownMenu.Item>
-                                <DropdownMenu.Separator className="h-px bg-[var(--color-border)] my-1" />
-                                <DropdownMenu.Item
-                                    className="flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-[var(--color-error)]/10 text-[var(--color-error)] cursor-pointer outline-none"
-                                    onSelect={handleLogout}
-                                >
-                                    <LogOut className="h-4 w-4" />
-                                    Logout
-                                </DropdownMenu.Item>
-                            </DropdownMenu.Content>
-                        </DropdownMenu.Portal>
-                    </DropdownMenu.Root>
-                )}
+                                <div className="p-1">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-[var(--color-surface-hover)] transition-colors text-left"
+                                    >
+                                        <LogOut className="h-4 w-4" />
+                                        <span>Sign out</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
         </header>
     );

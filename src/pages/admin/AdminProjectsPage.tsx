@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ProjectList } from '@/components/project/ProjectList';
 import { ProjectForm } from '@/components/project/ProjectForm';
 import { UserAssignmentModal } from '@/components/project/UserAssignmentModal';
+import { showToast } from '@/utils/toast';
 import type { Project } from '@/types/api.types';
 
 export const AdminProjectsPage: React.FC = () => {
@@ -19,31 +20,32 @@ export const AdminProjectsPage: React.FC = () => {
     const [assigningProject, setAssigningProject] = useState<Project | null>(null);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-    const handleDelete = async (projectId: number) => {
-        if (!confirm('Are you sure you want to delete this project?')) return;
+    const handleDelete = async (projectId: number, projectName: string) => {
         try {
             await deleteProject.mutateAsync(projectId);
-        } catch (err) {
-            alert('Failed to delete project');
+            showToast.success(`Project "${projectName}" deleted successfully`);
+        } catch (err: any) {
+            showToast.error(err?.response?.data?.message || 'Failed to delete project');
         }
     };
 
-    const handleRemoveUser = async (projectId: number, userId: number) => {
-        if (!confirm('Are you sure you want to remove this user from the project?')) return;
+    const handleRemoveUser = async (projectId: number, userId: number, userName: string) => {
         try {
             await removeUser.mutateAsync({ projectId, userId });
-        } catch (err) {
-            alert('Failed to remove user');
+            showToast.success(`${userName} removed from project`);
+        } catch (err: any) {
+            showToast.error(err?.response?.data?.message || 'Failed to remove user');
         }
     };
 
     if (isLoading) {
         return (
-            <div className="p-6">
-                <Skeleton className="h-8 w-48 mb-6" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-8 max-w-7xl mx-auto">
+                <Skeleton className="h-10 w-64 mb-2" />
+                <Skeleton className="h-5 w-96 mb-8" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3].map((i) => (
-                        <Skeleton key={i} className="h-40" />
+                        <Skeleton key={i} className="h-48 rounded-xl" />
                     ))}
                 </div>
             </div>
@@ -52,10 +54,13 @@ export const AdminProjectsPage: React.FC = () => {
 
     if (error) {
         return (
-            <div className="p-6">
-                <Card>
-                    <CardContent className="py-8 text-center">
-                        <p className="text-[var(--color-error)]">Failed to load projects</p>
+            <div className="p-8 max-w-7xl mx-auto">
+                <Card className="border-[var(--color-error)]/20">
+                    <CardContent className="py-12 text-center">
+                        <p className="text-[var(--color-error)] text-lg">Failed to load projects</p>
+                        <p className="text-sm text-[var(--color-text-secondary)] mt-2">
+                            Please try refreshing the page
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -63,30 +68,34 @@ export const AdminProjectsPage: React.FC = () => {
     }
 
     return (
-        <div className="p-6">
-            <div className="mb-6 flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-semibold mb-1">Projects</h1>
-                    <p className="text-sm text-[var(--color-text-secondary)]">
-                        Manage your projects and assign users
-                    </p>
+        <div className="p-8 max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-2">Projects</h1>
+                        <p className="text-[var(--color-text-secondary)]">
+                            Manage your projects and assign team members
+                        </p>
+                    </div>
+                    <Button
+                        variant="primary"
+                        leftIcon={<Plus className="h-4 w-4" />}
+                        onClick={() => setShowCreateForm(true)}
+                        className="shadow-sm hover:shadow-md transition-shadow"
+                    >
+                        New Project
+                    </Button>
                 </div>
-                <Button
-                    variant="primary"
-                    leftIcon={<Plus className="h-4 w-4" />}
-                    onClick={() => setShowCreateForm(true)}
-                >
-                    New Project
-                </Button>
             </div>
 
             {/* Create/Edit Form Modal */}
             {(showCreateForm || editingProject) && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-semibold">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--color-bg-primary)] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-[var(--color-border)]">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-semibold">
                                     {editingProject ? 'Edit Project' : 'Create New Project'}
                                 </h2>
                                 <button
@@ -94,11 +103,13 @@ export const AdminProjectsPage: React.FC = () => {
                                         setShowCreateForm(false);
                                         setEditingProject(null);
                                     }}
-                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
                             </div>
+                        </div>
+                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
                             <ProjectForm
                                 project={editingProject || undefined}
                                 onSuccess={() => {
@@ -126,40 +137,60 @@ export const AdminProjectsPage: React.FC = () => {
 
             {/* Project Details Modal */}
             {selectedProject && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-[var(--color-bg-primary)] rounded-lg shadow-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-xl font-semibold">{selectedProject.name}</h2>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--color-bg-primary)] rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-[var(--color-border)]">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-2xl font-semibold">{selectedProject.name}</h2>
+                                    <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                                        Project Details
+                                    </p>
+                                </div>
                                 <button
                                     onClick={() => setSelectedProject(null)}
-                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
                             </div>
+                        </div>
 
+                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-160px)] space-y-6">
                             {selectedProject.description && (
-                                <p className="text-sm text-[var(--color-text-secondary)] mb-4">
-                                    {selectedProject.description}
-                                </p>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                                        Description
+                                    </h3>
+                                    <p className="text-[var(--color-text-primary)]">
+                                        {selectedProject.description}
+                                    </p>
+                                </div>
                             )}
 
-                            <div className="mb-4">
-                                <h3 className="text-sm font-medium mb-2">Assigned Users</h3>
+                            <div>
+                                <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-3">
+                                    Team Members ({selectedProject.users?.length || 0})
+                                </h3>
                                 {selectedProject.users && selectedProject.users.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedProject.users.map((user) => (
                                             <div
                                                 key={user.id}
-                                                className="flex items-center justify-between p-2 rounded bg-[var(--color-bg-secondary)]"
+                                                className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] transition-colors border border-[var(--color-border)]"
                                             >
-                                                <span className="text-sm">
-                                                    {user.firstName} {user.lastName} ({user.email})
-                                                </span>
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {user.firstName} {user.lastName}
+                                                    </p>
+                                                    <p className="text-xs text-[var(--color-text-secondary)]">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
                                                 <button
-                                                    onClick={() => handleRemoveUser(selectedProject.id, user.id)}
-                                                    className="text-[var(--color-error)] hover:text-[var(--color-error)]/80"
+                                                    onClick={() => handleRemoveUser(selectedProject.id, user.id, `${user.firstName} ${user.lastName}`)}
+                                                    className="text-[var(--color-error)] hover:bg-[var(--color-error)]/10 p-2 rounded-lg transition-colors"
+                                                    title="Remove user"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </button>
@@ -167,13 +198,20 @@ export const AdminProjectsPage: React.FC = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-[var(--color-text-secondary)]">No users assigned</p>
+                                    <div className="text-center py-8 bg-[var(--color-bg-secondary)] rounded-lg border border-dashed border-[var(--color-border)]">
+                                        <p className="text-[var(--color-text-secondary)]">No team members assigned yet</p>
+                                        <p className="text-xs text-[var(--color-text-secondary)] mt-1">
+                                            Click "Assign User" to add team members
+                                        </p>
+                                    </div>
                                 )}
                             </div>
+                        </div>
 
-                            <div className="flex gap-2">
+                        <div className="p-6 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50">
+                            <div className="flex gap-3">
                                 <Button
-                                    variant="outline"
+                                    variant="primary"
                                     leftIcon={<UserPlus className="h-4 w-4" />}
                                     onClick={() => {
                                         setAssigningProject(selectedProject);
@@ -190,18 +228,18 @@ export const AdminProjectsPage: React.FC = () => {
                                         setSelectedProject(null);
                                     }}
                                 >
-                                    Edit
+                                    Edit Project
                                 </Button>
                                 <Button
                                     variant="outline"
                                     leftIcon={<Trash2 className="h-4 w-4" />}
                                     onClick={() => {
-                                        handleDelete(selectedProject.id);
+                                        handleDelete(selectedProject.id, selectedProject.name);
                                         setSelectedProject(null);
                                     }}
-                                    className="text-[var(--color-error)] hover:text-[var(--color-error)]/80"
+                                    className="text-[var(--color-error)] border-[var(--color-error)]/20 hover:bg-[var(--color-error)]/10"
                                 >
-                                    Delete
+                                    Delete Project
                                 </Button>
                             </div>
                         </div>

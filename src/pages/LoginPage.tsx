@@ -2,20 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, Shield, User as UserIcon } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { Mail, Lock, LogIn } from 'lucide-react';
 import { loginSchema, type LoginFormData } from '@/utils/validation';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-
-type LoginRole = 'admin' | 'user';
+import { showToast } from '@/utils/toast';
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const { login, userLogin } = useAuth();
+    const [role, setRole] = useState<'admin' | 'user'>('user');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedRole, setSelectedRole] = useState<LoginRole>('admin');
 
     const {
         register,
@@ -28,70 +26,62 @@ export const LoginPage: React.FC = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             setIsLoading(true);
-            setError(null);
-
-            // Use appropriate login method based on selected role
-            if (selectedRole === 'admin') {
+            if (role === 'admin') {
                 await login(data);
             } else {
                 await userLogin(data);
             }
-
+            showToast.success('Welcome back!');
             navigate('/dashboard');
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login failed. Please try again.');
+        } catch (err: any) {
+            showToast.error(err?.response?.data?.message || 'Invalid credentials');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-background)]">
+        <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)] p-4">
             <div className="w-full max-w-md">
                 {/* Logo */}
-                <div className="mb-8 text-center">
-                    <div className="inline-flex h-10 w-10 rounded-md bg-[var(--color-primary)] items-center justify-center mb-4">
-                        <span className="text-black font-bold text-lg">R</span>
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-primary)] mb-4">
+                        <span className="text-black font-bold text-xl">R</span>
                     </div>
-                    <h1 className="text-xl font-semibold mb-1">Welcome to Rooeel</h1>
-                    <p className="text-sm text-[var(--color-text-secondary)]">Sign in to your account</p>
+                    <h1 className="text-2xl font-bold mb-2">Welcome to Rooeel</h1>
+                    <p className="text-[var(--color-text-secondary)]">Sign in to your account</p>
                 </div>
 
-                {/* Login form */}
-                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-6">
-                    {/* Role Selection Tabs */}
-                    <div className="flex gap-2 mb-6 p-1 bg-[var(--color-background)] rounded-lg">
-                        <button
-                            type="button"
-                            onClick={() => setSelectedRole('admin')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${selectedRole === 'admin'
-                                    ? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm'
-                                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-                                }`}
-                        >
-                            <Shield className="h-4 w-4" />
-                            Admin
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setSelectedRole('user')}
-                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${selectedRole === 'user'
-                                    ? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm'
-                                    : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-                                }`}
-                        >
-                            <UserIcon className="h-4 w-4" />
-                            User
-                        </button>
+                {/* Login Form */}
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-8">
+                    {/* Role Selection */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-medium mb-3">Sign in as</label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setRole('user')}
+                                className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'user'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-border-light)] text-[var(--color-text-secondary)]'
+                                    }`}
+                            >
+                                <p className="font-medium text-sm">User</p>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRole('admin')}
+                                className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'admin'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-border-light)] text-[var(--color-text-secondary)]'
+                                    }`}
+                            >
+                                <p className="font-medium text-sm">Admin</p>
+                            </button>
+                        </div>
                     </div>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        {error && (
-                            <div className="p-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
-                                {error}
-                            </div>
-                        )}
-
                         <Input
                             label="Email"
                             type="email"
@@ -112,35 +102,33 @@ export const LoginPage: React.FC = () => {
 
                         <Button
                             type="submit"
+                            variant="primary"
                             className="w-full"
                             isLoading={isLoading}
+                            leftIcon={<LogIn className="h-4 w-4" />}
                         >
-                            Sign In as {selectedRole === 'admin' ? 'Admin' : 'User'}
+                            Sign In
                         </Button>
                     </form>
 
-                    {selectedRole === 'admin' && (
-                        <div className="mt-6 text-center text-xs text-[var(--color-text-tertiary)]">
-                            <p>
-                                Don't have an admin account?{' '}
-                                <Link
-                                    to="/signup"
-                                    className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
-                                >
-                                    Sign up
-                                </Link>
-                            </p>
-                        </div>
-                    )}
-
-                    {selectedRole === 'user' && (
-                        <div className="mt-6 p-3 rounded-md bg-[var(--color-info)]/10 border border-[var(--color-info)]/20">
-                            <p className="text-xs text-[var(--color-text-secondary)]">
-                                <strong>Note:</strong> Users cannot self-register. Contact an admin to create your account.
-                            </p>
-                        </div>
-                    )}
+                    {/* Sign Up Link */}
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-[var(--color-text-secondary)]">
+                            Don't have an account?{' '}
+                            <Link
+                                to="/signup"
+                                className="text-[var(--color-primary)] hover:text-[var(--color-primary-hover)] font-medium"
+                            >
+                                Sign up
+                            </Link>
+                        </p>
+                    </div>
                 </div>
+
+                {/* Footer */}
+                <p className="text-center text-xs text-[var(--color-text-tertiary)] mt-8">
+                    By signing in, you agree to our Terms of Service and Privacy Policy
+                </p>
             </div>
         </div>
     );

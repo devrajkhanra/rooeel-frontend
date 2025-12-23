@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, ClipboardList, Folder } from 'lucide-react';
+import { Home, Users, FileText, ClipboardList, Folder, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -14,7 +14,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     {
         label: 'Dashboard',
-        icon: <Home className="h-5 w-5" />,
+        icon: <LayoutDashboard className="h-5 w-5" />,
         path: '/dashboard',
     },
     {
@@ -62,37 +62,42 @@ export const Sidebar: React.FC = () => {
     );
 
     return (
-        <aside
-            className="fixed left-0 top-0 h-screen w-16 bg-[var(--color-sidebar)] border-r border-[var(--color-border)] z-50"
-        >
-            <div className="flex flex-col h-full">
-                {/* Logo/Brand */}
-                <div className="h-14 flex items-center justify-center border-b border-[var(--color-border)]">
-                    <div className="w-8 h-8 rounded-md bg-[var(--color-primary)] flex items-center justify-center">
-                        <span className="text-black font-bold text-sm">R</span>
-                    </div>
+        <aside className="fixed left-0 top-0 h-screen w-16 bg-[var(--color-sidebar)] border-r border-[var(--color-border)] z-50 flex flex-col">
+            {/* Logo */}
+            <div className="h-14 flex items-center justify-center border-b border-[var(--color-border)]">
+                <div className="w-9 h-9 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
+                    <span className="text-black font-bold text-base">R</span>
                 </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 py-4">
-                    {visibleItems.map((item) => (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            title={item.label}
-                            className={cn(
-                                'flex items-center justify-center h-12 mx-2 mb-1 rounded-md transition-all duration-200',
-                                'hover:bg-[var(--color-surface-hover)]',
-                                isActive(item.path)
-                                    ? 'text-[var(--color-primary)] bg-[var(--color-surface-hover)] border-l-2 border-[var(--color-primary)]'
-                                    : 'text-[var(--color-text-secondary)]'
-                            )}
-                        >
-                            {item.icon}
-                        </Link>
-                    ))}
-                </nav>
             </div>
+
+            {/* Navigation */}
+            <nav className="flex-1 py-4 space-y-1">
+                {visibleItems.map((item) => (
+                    <Link
+                        key={item.path}
+                        to={item.path}
+                        title={item.label}
+                        className={cn(
+                            'group relative flex items-center justify-center h-11 mx-2 rounded-lg transition-all duration-200',
+                            isActive(item.path)
+                                ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                                : 'text-[var(--color-text-tertiary)] hover:bg-[var(--color-surface-hover)] hover:text-[var(--color-text)]'
+                        )}
+                    >
+                        {item.icon}
+
+                        {/* Active Indicator */}
+                        {isActive(item.path) && (
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[var(--color-primary)] rounded-r-full" />
+                        )}
+
+                        {/* Tooltip */}
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-md text-xs font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 pointer-events-none">
+                            {item.label}
+                        </div>
+                    </Link>
+                ))}
+            </nav>
         </aside>
     );
 };

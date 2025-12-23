@@ -6,6 +6,7 @@ import { projectSchema, updateProjectSchema, type ProjectFormData, type UpdatePr
 import { useCreateProject, useUpdateProject } from '@/hooks/useProjects';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { showToast } from '@/utils/toast';
 import type { Project, ProjectStatus } from '@/types/api.types';
 
 interface ProjectFormProps {
@@ -14,10 +15,10 @@ interface ProjectFormProps {
     onCancel?: () => void;
 }
 
-const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'completed', label: 'Completed' },
+const STATUS_OPTIONS: { value: ProjectStatus; label: string; description: string }[] = [
+    { value: 'active', label: 'Active', description: 'Project is currently in progress' },
+    { value: 'inactive', label: 'Inactive', description: 'Project is paused or on hold' },
+    { value: 'completed', label: 'Completed', description: 'Project has been finished' },
 ];
 
 export const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSuccess, onCancel }) => {
@@ -30,6 +31,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSuccess, on
         register,
         handleSubmit,
         formState: { errors },
+        watch,
     } = useForm<ProjectFormData | UpdateProjectFormData>({
         resolver: zodResolver(isEditMode ? updateProjectSchema : projectSchema),
         defaultValues: project ? {
@@ -41,84 +43,110 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSuccess, on
         },
     });
 
+    const selectedStatus = watch('status');
+
     const onSubmit = async (data: ProjectFormData | UpdateProjectFormData) => {
         try {
             setError(null);
             if (isEditMode && project) {
                 await updateProject.mutateAsync({ id: project.id, data });
+                showToast.success('Project updated successfully');
             } else {
                 await createProject.mutateAsync(data as ProjectFormData);
+                showToast.success('Project created successfully');
             }
             onSuccess?.();
         } catch (err: any) {
-            setError(err?.response?.data?.message || err.message || 'Failed to save project');
+            const errorMessage = err?.response?.data?.message || err.message || 'Failed to save project';
+            setError(errorMessage);
+            showToast.error(errorMessage);
         }
     };
 
     const isLoading = createProject.isPending || updateProject.isPending;
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (
-                <div className="p-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
+                <div className="p-4 rounded-lg bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
                     {error}
                 </div>
             )}
 
-            <Input
-                label="Project Name"
-                placeholder="Enter project name"
-                leftIcon={<FileText className="h-4 w-4" />}
-                error={errors.name?.message}
-                {...register('name')}
-            />
+            <div>
+                <Input
+                    label="Project Name"
+                    placeholder="Enter project name"
+                    leftIcon={<FileText className="h-4 w-4" />}
+                    error={errors.name?.message}
+                    {...register('name')}
+                />
+                <p className="mt-1.5 text-xs text-[var(--color-text-secondary)]">
+                    A clear, descriptive name for your project
+                </p>
+            </div>
 
             <div>
                 <label className="block text-sm font-medium mb-2">
-                    Description
+                    Description <span className="text-[var(--color-text-secondary)]">(optional)</span>
                 </label>
                 <textarea
                     {...register('description')}
-                    placeholder="Enter project description (optional)"
+                    placeholder="Describe the project goals, scope, and key details..."
                     rows={4}
-                    className="w-full px-3 py-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] resize-none"
+                    className="w-full px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent resize-none transition-all"
                 />
                 {errors.description && (
-                    <p className="mt-1 text-xs text-[var(--color-error)]">
+                    <p className="mt-1.5 text-xs text-[var(--color-error)]">
                         {errors.description.message}
                     </p>
                 )}
             </div>
 
             <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-3">
                     <Tag className="h-4 w-4 inline mr-2" />
-                    Status
+                    Project Status
                 </label>
-                <select
-                    {...register('status')}
-                    className="w-full px-3 py-2 rounded-md border border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                >
+                <div className="space-y-2">
                     {STATUS_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
+                        <label
+                            key={option.value}
+                            className={`flex items-start p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedStatus === option.value
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-border-hover)] bg-[var(--color-bg-secondary)]'
+                                }`}
+                        >
+                            <input
+                                type="radio"
+                                value={option.value}
+                                {...register('status')}
+                                className="mt-1 mr-3 accent-[var(--color-primary)]"
+                            />
+                            <div className="flex-1">
+                                <div className="font-medium">{option.label}</div>
+                                <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
+                                    {option.description}
+                                </div>
+                            </div>
+                        </label>
                     ))}
-                </select>
+                </div>
                 {errors.status && (
-                    <p className="mt-1 text-xs text-[var(--color-error)]">
+                    <p className="mt-2 text-xs text-[var(--color-error)]">
                         {errors.status.message}
                     </p>
                 )}
             </div>
 
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-3 pt-4 border-t border-[var(--color-border)]">
                 {onCancel && (
                     <Button
                         type="button"
                         variant="outline"
                         onClick={onCancel}
                         disabled={isLoading}
+                        className="flex-1"
                     >
                         Cancel
                     </Button>
@@ -127,6 +155,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ project, onSuccess, on
                     type="submit"
                     variant="primary"
                     isLoading={isLoading}
+                    className="flex-1"
                 >
                     {isEditMode ? 'Update Project' : 'Create Project'}
                 </Button>

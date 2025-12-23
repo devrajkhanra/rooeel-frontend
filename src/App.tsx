@@ -8,6 +8,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { UserListPage } from './pages/user/UserListPage';
 import { AdminEditPage } from './pages/admin/AdminEditPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { LoggerTest } from './components/LoggerTest';
+import { TokenDebugger } from './components/TokenDebugger';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -42,10 +44,17 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+
+        {/* Debug Components (only in development) */}
+        {import.meta.env.DEV && (
+          <>
+            <LoggerTest />
+            <TokenDebugger />
+          </>
+        )}
       </BrowserRouter>
     </QueryClientProvider>
   );
 }
 
 export default App;
-

@@ -1,5 +1,8 @@
 import { apiClient } from './api.client';
 import type { Admin, UpdateAdminDto } from '@/types/api.types';
+import { createLogger } from '@/utils/logger';
+
+const logger = createLogger('AdminService');
 
 /**
  * Admin Service
@@ -13,7 +16,9 @@ import type { Admin, UpdateAdminDto } from '@/types/api.types';
 export const adminService = {
     // Get all admins
     getAllAdmins: async (): Promise<Admin[]> => {
+        logger.debug('Fetching all admins');
         const response = await apiClient.get<Admin[]>('/admin');
+        logger.debug(`Fetched ${response.data.length} admins`);
         return response.data;
     },
 
@@ -25,12 +30,16 @@ export const adminService = {
 
     // Update admin
     updateAdmin: async (id: number, data: UpdateAdminDto): Promise<Admin> => {
+        logger.info('Updating admin', { adminId: id });
         const response = await apiClient.patch<Admin>(`/admin/${id}`, data);
+        logger.info('Admin updated successfully', { adminId: id });
         return response.data;
     },
 
     // Delete admin
     deleteAdmin: async (id: number): Promise<void> => {
+        logger.info('Deleting admin', { adminId: id });
         await apiClient.delete(`/admin/${id}`);
+        logger.info('Admin deleted successfully', { adminId: id });
     },
 };

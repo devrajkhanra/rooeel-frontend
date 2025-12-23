@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Trash2, Mail, UserPlus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { Trash2, UserPlus, ChevronUp } from 'lucide-react';
 import { formatDate, formatName } from '@/utils/format';
 import { CreateUserForm } from '@/components/admin/CreateUserForm';
 import type { User } from '@/types/api.types';
@@ -90,7 +91,7 @@ export const UserListPage: React.FC = () => {
                                 onClick={() => setShowCreateForm(false)}
                                 className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                             >
-                                {showCreateForm ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                                <ChevronUp className="h-5 w-5" />
                             </button>
                         </div>
                         <div className="p-4 rounded-md bg-[var(--color-info)]/10 border border-[var(--color-info)]/20 mb-4">
@@ -103,7 +104,7 @@ export const UserListPage: React.FC = () => {
                 </Card>
             )}
 
-            {/* User List */}
+            {/* User Table */}
             {users && users.length === 0 ? (
                 <Card>
                     <CardContent className="py-12 text-center">
@@ -113,44 +114,54 @@ export const UserListPage: React.FC = () => {
                     </CardContent>
                 </Card>
             ) : (
-                <div className="space-y-3">
-                    {users?.map((user: User) => (
-                        <Card key={user.id} className="hover:border-[var(--color-border-light)] transition-colors">
-                            <CardContent className="p-4">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-1">
-                                            <h3 className="text-sm font-semibold">
-                                                {formatName(user.firstName, user.lastName)}
-                                            </h3>
-                                            <Badge variant="success">Active</Badge>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-                                            <Mail className="h-3 w-3" />
-                                            <span>{user.email}</span>
-                                        </div>
-                                        <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
-                                            Created {formatDate(user.createdAt)}
-                                        </p>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead>Status</TableHead>
+                            {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {users?.map((user: User) => (
+                            <TableRow key={user.id}>
+                                <TableCell className="font-medium text-[var(--color-text-secondary)]">
+                                    #{user.id}
+                                </TableCell>
+                                <TableCell>
+                                    <div className="font-medium text-[var(--color-text-primary)]">
+                                        {formatName(user.firstName, user.lastName)}
                                     </div>
-                                    {isAdmin && (
-                                        <div className="flex gap-2">
-                                            <Button
-                                                variant="danger"
-                                                size="sm"
-                                                leftIcon={<Trash2 className="h-4 w-4" />}
-                                                onClick={() => handleDelete(user.id)}
-                                                isLoading={deleteUser.isPending}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                                </TableCell>
+                                <TableCell className="text-[var(--color-text-secondary)]">
+                                    {user.email}
+                                </TableCell>
+                                <TableCell className="text-[var(--color-text-secondary)]">
+                                    {formatDate(user.createdAt)}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="success">Active</Badge>
+                                </TableCell>
+                                {isAdmin && (
+                                    <TableCell className="text-right">
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            leftIcon={<Trash2 className="h-4 w-4" />}
+                                            onClick={() => handleDelete(user.id)}
+                                            isLoading={deleteUser.isPending}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                )}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             )}
         </div>
     );

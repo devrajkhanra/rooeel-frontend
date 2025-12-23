@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { AuthUser } from '@/types/auth.types';
-import { STORAGE_KEYS } from '@/config/constants';
 
 interface AuthStore {
     user: AuthUser | null;
@@ -31,7 +30,7 @@ export const useAuthStore = create<AuthStore>()(
                 }),
         }),
         {
-            name: STORAGE_KEYS.AUTH_TOKEN,
+            name: 'auth_store', // Changed from STORAGE_KEYS.AUTH_TOKEN to avoid conflict
         }
     )
 );

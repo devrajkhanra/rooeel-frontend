@@ -6,7 +6,9 @@ import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { UserListPage } from './pages/user/UserListPage';
+import { MyRequestsPage } from './pages/user/MyRequestsPage';
 import { AdminEditPage } from './pages/admin/AdminEditPage';
+import { AdminRequestsPage } from './pages/admin/AdminRequestsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LoggerTest } from './components/LoggerTest';
 import { TokenDebugger } from './components/TokenDebugger';
@@ -37,7 +39,9 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/users" element={<UserListPage />} />
+              <Route path="/my-requests" element={<MyRequestsPage />} />
               <Route path="/admin/:id/edit" element={<AdminEditPage />} />
+              <Route path="/admin/requests" element={<AdminRequestsPage />} />
             </Route>
           </Route>
 

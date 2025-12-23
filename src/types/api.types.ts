@@ -27,6 +27,7 @@ export interface User {
     lastName: string;
     email: string;
     password?: string; // Optional as it shouldn't be returned from API
+    createdBy?: number; // Foreign key to Admin
     createdAt: string;
 }
 
@@ -42,6 +43,28 @@ export interface UpdateUserDto {
     lastName?: string;
     email?: string;
     password?: string;
+}
+
+// Request Management Types
+export type RequestType = 'firstName' | 'lastName' | 'email' | 'password';
+export type RequestStatus = 'pending' | 'approved' | 'rejected';
+
+export interface UserRequest {
+    id: number;
+    userId: number;
+    adminId: number;
+    requestType: RequestType;
+    currentValue: string;
+    requestedValue: string;
+    status: RequestStatus;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateRequestDto {
+    requestType: RequestType;
+    requestedValue: string;
+    currentPassword?: string; // Required for password changes
 }
 
 export interface ApiResponse<T> {

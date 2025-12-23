@@ -17,4 +17,6 @@ export const QUERY_KEYS = {
     USERS: 'users',
     USER: 'user',
     CURRENT_USER: 'currentUser',
+    MY_REQUESTS: 'myRequests',
+    ADMIN_REQUESTS: 'adminRequests',
 } as const;

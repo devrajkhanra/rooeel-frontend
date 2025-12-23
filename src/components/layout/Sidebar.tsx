@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users } from 'lucide-react';
+import { Home, Users, FileText, ClipboardList } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useAuth } from '@/hooks/useAuth';
 
 interface NavItem {
     label: string;
     icon: React.ReactNode;
     path: string;
+    roles?: ('admin' | 'user')[];
 }
 
 const navItems: NavItem[] = [
@@ -19,15 +21,33 @@ const navItems: NavItem[] = [
         label: 'Users',
         icon: <Users className="h-5 w-5" />,
         path: '/users',
+        roles: ['admin'],
+    },
+    {
+        label: 'My Requests',
+        icon: <FileText className="h-5 w-5" />,
+        path: '/my-requests',
+        roles: ['user'],
+    },
+    {
+        label: 'Requests',
+        icon: <ClipboardList className="h-5 w-5" />,
+        path: '/admin/requests',
+        roles: ['admin'],
     },
 ];
 
 export const Sidebar: React.FC = () => {
     const location = useLocation();
+    const { user } = useAuth();
 
     const isActive = (path: string) => {
         return location.pathname === path || location.pathname.startsWith(path + '/');
     };
+
+    const visibleItems = navItems.filter(item =>
+        !item.roles || (user?.role && item.roles.includes(user.role))
+    );
 
     return (
         <aside
@@ -43,7 +63,7 @@ export const Sidebar: React.FC = () => {
 
                 {/* Navigation */}
                 <nav className="flex-1 py-4">
-                    {navItems.map((item) => (
+                    {visibleItems.map((item) => (
                         <Link
                             key={item.path}
                             to={item.path}

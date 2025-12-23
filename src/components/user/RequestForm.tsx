@@ -51,13 +51,28 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
             const errorDetails = err?.response?.data?.error || '';
             const statusCode = err?.response?.status || '';
 
+            // Check for specific "no assigned admin" error
+            const isAdminAssignmentError =
+                errorMessage.toLowerCase().includes('does not have an assigned admin') ||
+                errorMessage.toLowerCase().includes('createdby') ||
+                errorDetails.toLowerCase().includes('admin');
+
             // Construct full error message
             let fullError = errorMessage;
-            if (errorDetails && errorDetails !== errorMessage) {
-                fullError += `: ${errorDetails}`;
-            }
-            if (statusCode) {
-                fullError += ` (Status: ${statusCode})`;
+
+            if (isAdminAssignmentError) {
+                fullError = `⚠️ Admin Assignment Required\n\n` +
+                    `Your account is not assigned to an admin. This is required to create change requests.\n\n` +
+                    `Solution: Ask your system administrator to run the following command on the backend server:\n` +
+                    `npx ts-node src/scripts/fix-user-admin.ts\n\n` +
+                    `This will assign your account to an admin and resolve the issue.`;
+            } else {
+                if (errorDetails && errorDetails !== errorMessage) {
+                    fullError += `: ${errorDetails}`;
+                }
+                if (statusCode) {
+                    fullError += ` (Status: ${statusCode})`;
+                }
             }
 
             // Log comprehensive error information
@@ -65,6 +80,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
             console.error('Status:', statusCode);
             console.error('Message:', errorMessage);
             console.error('Details:', errorDetails);
+            console.error('Is Admin Assignment Error:', isAdminAssignmentError);
             console.error('Full Response:', err?.response?.data);
             console.error('Request Payload:', data);
             console.error('============================');
@@ -76,7 +92,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-                <div className="p-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm">
+                <div className="p-3 rounded-md bg-[var(--color-error)]/10 border border-[var(--color-error)]/20 text-[var(--color-error)] text-sm whitespace-pre-line">
                     {error}
                 </div>
             )}

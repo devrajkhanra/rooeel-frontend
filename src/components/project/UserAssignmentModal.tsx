@@ -52,8 +52,8 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-[var(--color-bg-primary)] rounded-xl shadow-2xl max-w-md w-full border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-black/70 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-[var(--color-surface)] rounded-xl shadow-2xl max-w-md w-full border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-[var(--color-border)]">
                     <div>

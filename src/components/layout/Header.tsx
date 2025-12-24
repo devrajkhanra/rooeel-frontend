@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, User, ChevronDown } from 'lucide-react';
+import { LogOut, User, ChevronDown, Sun, Moon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 
 const getBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
@@ -31,6 +32,7 @@ export const Header: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [showUserMenu, setShowUserMenu] = React.useState(false);
 
     const breadcrumbs = getBreadcrumbs(location.pathname);
@@ -48,47 +50,63 @@ export const Header: React.FC = () => {
                     {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
                 </div>
 
-                {/* User Menu */}
-                <div className="relative">
+                {/* Actions */}
+                <div className="flex items-center gap-2">
+                    {/* Theme Toggle */}
                     <button
-                        onClick={() => setShowUserMenu(!showUserMenu)}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
+                        onClick={toggleTheme}
+                        className="p-2 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
+                        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
-                        <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
-                            <User className="h-4 w-4 text-black" />
-                        </div>
-                        <span className="text-sm font-medium hidden sm:inline">
-                            {user?.email}
-                        </span>
-                        <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                        {theme === 'dark' ? (
+                            <Sun className="h-5 w-5 text-[var(--color-text-secondary)]" />
+                        ) : (
+                            <Moon className="h-5 w-5 text-[var(--color-text-secondary)]" />
+                        )}
                     </button>
 
-                    {/* Dropdown Menu */}
-                    {showUserMenu && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setShowUserMenu(false)}
-                            />
-                            <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg z-20 animate-slide-down">
-                                <div className="p-3 border-b border-[var(--color-border)]">
-                                    <p className="text-sm font-medium">{user?.email}</p>
-                                    <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5 capitalize">
-                                        {user?.role}
-                                    </p>
-                                </div>
-                                <div className="p-1">
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-[var(--color-surface-hover)] transition-colors text-left"
-                                    >
-                                        <LogOut className="h-4 w-4" />
-                                        <span>Sign out</span>
-                                    </button>
-                                </div>
+                    {/* User Menu */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
+                        >
+                            <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                                <User className="h-4 w-4 text-black" />
                             </div>
-                        </>
-                    )}
+                            <span className="text-sm font-medium hidden sm:inline">
+                                {user?.email}
+                            </span>
+                            <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showUserMenu && (
+                            <>
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setShowUserMenu(false)}
+                                />
+                                <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg z-20 animate-slide-down">
+                                    <div className="p-3 border-b border-[var(--color-border)]">
+                                        <p className="text-sm font-medium">{user?.email}</p>
+                                        <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5 capitalize">
+                                            {user?.role}
+                                        </p>
+                                    </div>
+                                    <div className="p-1">
+                                        <button
+                                            onClick={handleLogout}
+                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-[var(--color-surface-hover)] transition-colors text-left"
+                                        >
+                                            <LogOut className="h-4 w-4" />
+                                            <span>Sign out</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
         </header>

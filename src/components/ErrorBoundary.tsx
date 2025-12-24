@@ -66,20 +66,20 @@ class ErrorBoundary extends Component<Props, State> {
 
             // Default error UI
             return (
-                <div className="min-h-screen flex items-center justify-center bg-background p-4">
+                <div className="min-h-screen flex items-center justify-center bg-[var(--color-background)] p-4">
                     <div className="max-w-md w-full space-y-6 text-center">
                         <div className="space-y-2">
-                            <h1 className="text-3xl font-bold text-foreground">
+                            <h1 className="text-3xl font-bold text-[var(--color-text)]">
                                 Oops! Something went wrong
                             </h1>
-                            <p className="text-muted-foreground">
+                            <p className="text-[var(--color-text-secondary)]">
                                 We've encountered an unexpected error. Our team has been notified.
                             </p>
                         </div>
 
                         {this.state.error && (
-                            <div className="bg-muted rounded-lg p-4 text-left">
-                                <p className="text-sm font-mono text-destructive break-all">
+                            <div className="bg-[var(--color-surface)] rounded-lg p-4 text-left border border-[var(--color-error)]/20">
+                                <p className="text-sm font-mono text-[var(--color-error)] break-all">
                                     {this.state.error.toString()}
                                 </p>
                             </div>
@@ -96,10 +96,10 @@ class ErrorBoundary extends Component<Props, State> {
 
                         {import.meta.env.DEV && this.state.errorInfo && (
                             <details className="text-left">
-                                <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
+                                <summary className="cursor-pointer text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text)]">
                                     View Error Details
                                 </summary>
-                                <pre className="mt-2 text-xs bg-muted p-4 rounded overflow-auto max-h-64">
+                                <pre className="mt-2 text-xs bg-[var(--color-surface)] p-4 rounded overflow-auto max-h-64 border border-[var(--color-border)]">
                                     {this.state.errorInfo.componentStack}
                                 </pre>
                             </details>

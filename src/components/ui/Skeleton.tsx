@@ -1,18 +1,21 @@
 import React from 'react';
 import { cn } from '@/utils/cn';
 
-export const Skeleton = React.forwardRef<
-    HTMLDivElement,
-    React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-    <div
-        ref={ref}
-        className={cn(
-            'animate-pulse rounded-md bg-[var(--color-surface)]',
-            className
-        )}
-        {...props}
-    />
-));
+export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> { }
+
+export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
+    ({ className, ...props }, ref) => {
+        return (
+            <div
+                ref={ref}
+                className={cn(
+                    'animate-pulse rounded-md bg-[var(--color-border)]',
+                    className
+                )}
+                {...props}
+            />
+        );
+    }
+);
 
 Skeleton.displayName = 'Skeleton';

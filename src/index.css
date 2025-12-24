@@ -90,28 +90,35 @@
   --z-tooltip: 1070;
 }
 
-/* Light mode (optional) */
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-background: #ffffff;
-    --color-surface: #f9f9f9;
-    --color-surface-hover: #f3f4f6;
-    --color-header: #ffffff;
-    --color-sidebar: #f9f9f9;
-    
-    --color-border: #e5e7eb;
-    --color-border-light: #d1d5db;
-    
-    --color-text: #111111;
-    --color-text-secondary: #71717a;
-    --color-text-tertiary: #a1a1aa;
-    --color-text-muted: #d4d4d8;
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.15);
-  }
+/* Light theme - controlled by class */
+html.light {
+  --color-background: #ffffff;
+  --color-surface: #f9f9f9;
+  --color-surface-hover: #f3f4f6;
+  --color-header: #ffffff;
+  --color-sidebar: #f9f9f9;
+  
+  --color-border: #e5e7eb;
+  --color-border-light: #d1d5db;
+  
+  --color-text: #111111;
+  --color-text-secondary: #71717a;
+  --color-text-tertiary: #a1a1aa;
+  --color-text-muted: #d4d4d8;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px 0 rgba(0, 0, 0, 0.15);
 }
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 200ms ease-in-out, border-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+
+/* Force dark mode - Supabase style */
+/* Light mode removed to maintain consistent dark theme */
+
 
 /* ===== RESET \u0026 BASE STYLES ===== */
 *,

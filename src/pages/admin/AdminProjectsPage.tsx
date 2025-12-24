@@ -91,8 +91,8 @@ export const AdminProjectsPage: React.FC = () => {
 
             {/* Create/Edit Form Modal */}
             {(showCreateForm || editingProject) && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-[var(--color-bg-primary)] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 bg-black/70 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--color-surface)] rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-[var(--color-border)]">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-semibold">
@@ -137,8 +137,8 @@ export const AdminProjectsPage: React.FC = () => {
 
             {/* Project Details Modal */}
             {selectedProject && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-[var(--color-bg-primary)] rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
+                <div className="fixed inset-0 bg-black/70 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--color-surface)] rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden border border-[var(--color-border)] animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-[var(--color-border)]">
                             <div className="flex items-center justify-between">
                                 <div>

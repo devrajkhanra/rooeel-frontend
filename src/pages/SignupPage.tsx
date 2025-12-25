@@ -60,6 +60,7 @@ export const SignupPage: React.FC = () => {
                             <Input
                                 label="First Name"
                                 placeholder="John"
+                                autoComplete="given-name"
                                 leftIcon={<User className="h-4 w-4" />}
                                 error={errors.firstName?.message}
                                 {...register('firstName')}
@@ -67,6 +68,7 @@ export const SignupPage: React.FC = () => {
                             <Input
                                 label="Last Name"
                                 placeholder="Doe"
+                                autoComplete="family-name"
                                 leftIcon={<User className="h-4 w-4" />}
                                 error={errors.lastName?.message}
                                 {...register('lastName')}
@@ -77,6 +79,7 @@ export const SignupPage: React.FC = () => {
                             label="Email"
                             type="email"
                             placeholder="you@example.com"
+                            autoComplete="email"
                             leftIcon={<Mail className="h-4 w-4" />}
                             error={errors.email?.message}
                             {...register('email')}
@@ -87,6 +90,7 @@ export const SignupPage: React.FC = () => {
                             type="password"
                             placeholder="••••••••"
                             helperText="Minimum 6 characters"
+                            autoComplete="new-password"
                             leftIcon={<Lock className="h-4 w-4" />}
                             error={errors.password?.message}
                             {...register('password')}

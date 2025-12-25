@@ -75,7 +75,7 @@ export const UserProjectsPage: React.FC = () => {
                                 </div>
                                 <button
                                     onClick={() => setSelectedProject(null)}
-                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg"
+                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors p-2 hover:bg-[var(--color-surface-hover)] rounded-lg"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -88,7 +88,7 @@ export const UserProjectsPage: React.FC = () => {
                                     <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
                                         Description
                                     </h3>
-                                    <p className="text-[var(--color-text-primary)] leading-relaxed">
+                                    <p className="text-[var(--color-text)] leading-relaxed">
                                         {selectedProject.description}
                                     </p>
                                 </div>
@@ -100,19 +100,24 @@ export const UserProjectsPage: React.FC = () => {
                                         Team Members ({selectedProject.users.length})
                                     </h3>
                                     <div className="space-y-2">
-                                        {selectedProject.users.map((user) => (
-                                            <div
-                                                key={user.id}
-                                                className="p-3 rounded-lg bg-[var(--color-bg-secondary)] border border-[var(--color-border)]"
-                                            >
-                                                <p className="font-medium">
-                                                    {user.firstName} {user.lastName}
-                                                </p>
-                                                <p className="text-xs text-[var(--color-text-secondary)]">
-                                                    {user.email}
-                                                </p>
-                                            </div>
-                                        ))}
+                                        {selectedProject.users.map((projectUser) => {
+                                            const user = projectUser.user;
+                                            if (!user) return null;
+
+                                            return (
+                                                <div
+                                                    key={projectUser.id}
+                                                    className="p-3 rounded-lg bg-[var(--color-surface-hover)] border border-[var(--color-border)]"
+                                                >
+                                                    <p className="font-medium text-[var(--color-text)]">
+                                                        {user.firstName} {user.lastName}
+                                                    </p>
+                                                    <p className="text-xs text-[var(--color-text-secondary)]">
+                                                        {user.email}
+                                                    </p>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             )}
@@ -122,7 +127,7 @@ export const UserProjectsPage: React.FC = () => {
                                     <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
                                         Project Owner
                                     </h3>
-                                    <div className="p-3 rounded-lg bg-[var(--color-bg-secondary)] border border-[var(--color-border)]">
+                                    <div className="p-3 rounded-lg bg-[var(--color-surface-hover)] border border-[var(--color-border)]">
                                         <p className="font-medium">
                                             {selectedProject.admin.firstName} {selectedProject.admin.lastName}
                                         </p>
@@ -137,7 +142,7 @@ export const UserProjectsPage: React.FC = () => {
                                 <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
                                     Created
                                 </h3>
-                                <p className="text-[var(--color-text-primary)]">
+                                <p className="text-[var(--color-text)]">
                                     {new Date(selectedProject.createdAt).toLocaleDateString('en-US', {
                                         year: 'numeric',
                                         month: 'long',

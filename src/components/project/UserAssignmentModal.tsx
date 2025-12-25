@@ -23,7 +23,7 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
     const [error, setError] = useState<string | null>(null);
 
     // Filter out users already assigned to the project
-    const assignedUserIds = project.users?.map(u => u.id) || [];
+    const assignedUserIds = project.users?.map(pu => pu.userId) || [];
     const availableUsers = allUsers?.filter(user => !assignedUserIds.includes(user.id)) || [];
 
     const handleAssign = async () => {
@@ -67,7 +67,7 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg"
+                        className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors p-2 hover:bg-[var(--color-surface-hover)] rounded-lg"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -87,7 +87,7 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
                             <p className="text-sm text-[var(--color-text-secondary)] mt-3">Loading users...</p>
                         </div>
                     ) : availableUsers.length === 0 ? (
-                        <div className="text-center py-8 bg-[var(--color-bg-secondary)] rounded-lg border border-dashed border-[var(--color-border)]">
+                        <div className="text-center py-8 bg-[var(--color-surface-hover)] rounded-lg border border-dashed border-[var(--color-border)]">
                             <p className="text-[var(--color-text-secondary)]">
                                 No available users to assign
                             </p>
@@ -103,7 +103,7 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
                             <select
                                 value={selectedUserId || ''}
                                 onChange={(e) => setSelectedUserId(Number(e.target.value))}
-                                className="w-full px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all"
                             >
                                 <option value="">Choose a user...</option>
                                 {availableUsers.map((user) => (
@@ -120,7 +120,7 @@ export const UserAssignmentModal: React.FC<UserAssignmentModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="flex gap-3 p-6 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50">
+                <div className="flex gap-3 p-6 border-t border-[var(--color-border)] bg-[var(--color-surface-hover)]">
                     <Button
                         variant="outline"
                         onClick={onClose}

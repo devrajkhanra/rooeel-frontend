@@ -62,8 +62,8 @@ export const LoginPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setRole('user')}
                                 className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'user'
-                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                    : 'border-[var(--color-border)] hover:border-[var(--color-border-light)] text-[var(--color-text-secondary)]'
+                                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                        : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">User</p>
@@ -72,8 +72,8 @@ export const LoginPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setRole('admin')}
                                 className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'admin'
-                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                    : 'border-[var(--color-border)] hover:border-[var(--color-border-light)] text-[var(--color-text-secondary)]'
+                                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                        : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">Admin</p>

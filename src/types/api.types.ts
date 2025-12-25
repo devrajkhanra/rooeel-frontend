@@ -90,7 +90,7 @@ export interface Project {
     createdAt: string;
     updatedAt: string;
     // Relations (when included)
-    users?: User[];
+    users?: ProjectUser[];  // Array of ProjectUser objects with nested user data
     admin?: Admin;
 }
 
@@ -99,6 +99,8 @@ export interface ProjectUser {
     projectId: number;
     userId: number;
     assignedAt: string;
+    // Nested user data from backend
+    user?: User;
 }
 
 export interface CreateProjectDto {

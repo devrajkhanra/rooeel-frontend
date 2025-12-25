@@ -10,13 +10,14 @@ const defaultOptions = {
     duration: 4000,
     position: 'top-right' as const,
     style: {
-        background: 'var(--color-bg-secondary)',
-        color: 'var(--color-text-primary)',
+        background: 'var(--color-surface)',
+        color: 'var(--color-text)',
         border: '1px solid var(--color-border)',
         borderRadius: '8px',
         padding: '12px 16px',
         fontSize: '14px',
         maxWidth: '400px',
+        boxShadow: 'var(--shadow-lg)',
     },
 };
 
@@ -26,7 +27,7 @@ export const showToast = {
             ...defaultOptions,
             iconTheme: {
                 primary: 'var(--color-success)',
-                secondary: 'var(--color-bg-secondary)',
+                secondary: 'var(--color-surface)',
             },
         });
     },
@@ -36,7 +37,7 @@ export const showToast = {
             ...defaultOptions,
             iconTheme: {
                 primary: 'var(--color-error)',
-                secondary: 'var(--color-bg-secondary)',
+                secondary: 'var(--color-surface)',
             },
         });
     },

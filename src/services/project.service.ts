@@ -51,16 +51,18 @@ export const projectService = {
     },
 
     // Assign user to project (admin only)
-    assignUser: async (projectId: number, data: AssignUserDto): Promise<void> => {
-        logger.info('Assigning user to project', { projectId, userId: data.userId });
-        await apiClient.post(`/project/${projectId}/assign-user`, data);
-        logger.info('User assigned successfully', { projectId, userId: data.userId });
+    assignUser: async (projectId: number, data: AssignUserDto): Promise<{ assignedUsers: string[] }> => {
+        logger.info(`Assigning user ${data.userId} to project ${projectId}`);
+        const response = await apiClient.post<{ assignedUsers: string[] }>(`/project/${projectId}/assign-user`, data);
+        logger.info(`User assigned successfully. Assigned users: ${response.data.assignedUsers.join(', ')}`);
+        return response.data;
     },
 
     // Remove user from project (admin only)
-    removeUser: async (projectId: number, userId: number): Promise<void> => {
-        logger.info('Removing user from project', { projectId, userId });
-        await apiClient.delete(`/project/${projectId}/remove-user/${userId}`);
-        logger.info('User removed successfully', { projectId, userId });
+    removeUser: async (projectId: number, userId: number): Promise<{ assignedUsers: string[] }> => {
+        logger.info(`Removing user ${userId} from project ${projectId}`);
+        const response = await apiClient.delete<{ assignedUsers: string[] }>(`/project/${projectId}/remove-user/${userId}`);
+        logger.info(`User removed successfully. Remaining users: ${response.data.assignedUsers.join(', ')}`);
+        return response.data;
     },
 };

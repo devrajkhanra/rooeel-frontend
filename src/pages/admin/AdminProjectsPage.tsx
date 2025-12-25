@@ -33,6 +33,14 @@ export const AdminProjectsPage: React.FC = () => {
         try {
             await removeUser.mutateAsync({ projectId, userId });
             showToast.success(`${userName} removed from project`);
+
+            // Optimistically update the selectedProject state to immediately reflect the change
+            if (selectedProject && selectedProject.id === projectId) {
+                setSelectedProject({
+                    ...selectedProject,
+                    users: selectedProject.users?.filter(pu => pu.userId !== userId)
+                });
+            }
         } catch (err: any) {
             showToast.error(err?.response?.data?.message || 'Failed to remove user');
         }
@@ -149,7 +157,7 @@ export const AdminProjectsPage: React.FC = () => {
                                 </div>
                                 <button
                                     onClick={() => setSelectedProject(null)}
-                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors p-2 hover:bg-[var(--color-bg-secondary)] rounded-lg"
+                                    className="text-[var(--color-text-secondary)] hover:text-[var(--color-text)] transition-colors p-2 hover:bg-[var(--color-surface-hover)] rounded-lg"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -162,7 +170,7 @@ export const AdminProjectsPage: React.FC = () => {
                                     <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
                                         Description
                                     </h3>
-                                    <p className="text-[var(--color-text-primary)]">
+                                    <p className="text-[var(--color-text)]">
                                         {selectedProject.description}
                                     </p>
                                 </div>
@@ -174,31 +182,36 @@ export const AdminProjectsPage: React.FC = () => {
                                 </h3>
                                 {selectedProject.users && selectedProject.users.length > 0 ? (
                                     <div className="space-y-2">
-                                        {selectedProject.users.map((user) => (
-                                            <div
-                                                key={user.id}
-                                                className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-tertiary)] transition-colors border border-[var(--color-border)]"
-                                            >
-                                                <div>
-                                                    <p className="font-medium">
-                                                        {user.firstName} {user.lastName}
-                                                    </p>
-                                                    <p className="text-xs text-[var(--color-text-secondary)]">
-                                                        {user.email}
-                                                    </p>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleRemoveUser(selectedProject.id, user.id, `${user.firstName} ${user.lastName}`)}
-                                                    className="text-[var(--color-error)] hover:bg-[var(--color-error)]/10 p-2 rounded-lg transition-colors"
-                                                    title="Remove user"
+                                        {selectedProject.users.map((projectUser) => {
+                                            const user = projectUser.user;
+                                            if (!user) return null;
+
+                                            return (
+                                                <div
+                                                    key={projectUser.id}
+                                                    className="flex items-center justify-between p-3 rounded-lg bg-[var(--color-surface-hover)] hover:bg-[var(--color-border)] transition-colors border border-[var(--color-border)]"
                                                 >
-                                                    <X className="h-4 w-4" />
-                                                </button>
-                                            </div>
-                                        ))}
+                                                    <div>
+                                                        <p className="font-medium text-[var(--color-text)]">
+                                                            {user.firstName} {user.lastName}
+                                                        </p>
+                                                        <p className="text-xs text-[var(--color-text-secondary)]">
+                                                            {user.email}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => handleRemoveUser(selectedProject.id, user.id, `${user.firstName} ${user.lastName}`)}
+                                                        className="text-[var(--color-error)] hover:bg-[var(--color-error)]/10 p-2 rounded-lg transition-colors"
+                                                        title="Remove user"
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8 bg-[var(--color-bg-secondary)] rounded-lg border border-dashed border-[var(--color-border)]">
+                                    <div className="text-center py-8 bg-[var(--color-surface-hover)] rounded-lg border border-dashed border-[var(--color-border)]">
                                         <p className="text-[var(--color-text-secondary)]">No team members assigned yet</p>
                                         <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                                             Click "Assign User" to add team members
@@ -208,7 +221,7 @@ export const AdminProjectsPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="p-6 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50">
+                        <div className="p-6 border-t border-[var(--color-border)] bg-[var(--color-surface-hover)]">
                             <div className="flex gap-3">
                                 <Button
                                     variant="primary"

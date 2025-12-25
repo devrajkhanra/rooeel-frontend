@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, ClipboardList, Folder, LayoutDashboard } from 'lucide-react';
+import { Home, Users, FileText, ClipboardList, Folder, LayoutDashboard, Briefcase } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -27,6 +27,12 @@ const navItems: NavItem[] = [
         label: 'Projects',
         icon: <Folder className="h-5 w-5" />,
         path: '/admin/projects',
+        roles: ['admin'],
+    },
+    {
+        label: 'Designations',
+        icon: <Briefcase className="h-5 w-5" />,
+        path: '/admin/designations',
         roles: ['admin'],
     },
     {

@@ -118,3 +118,32 @@ export interface UpdateProjectDto {
 export interface AssignUserDto {
     userId: number;
 }
+
+// Designation Management Types
+export interface Designation {
+    id: number;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface CreateDesignationDto {
+    name: string;
+    description?: string;
+}
+
+export interface UpdateDesignationDto {
+    name?: string;
+    description?: string;
+}
+
+export interface ProjectDesignation {
+    id: number;
+    projectId: number;
+    designationId: number;
+    assignedAt: string;
+    // Nested designation data (for future use)
+    designation?: Designation;
+}
+

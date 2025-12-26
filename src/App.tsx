@@ -15,8 +15,6 @@ import { AdminRequestsPage } from './pages/admin/AdminRequestsPage';
 import { AdminProjectsPage } from './pages/admin/AdminProjectsPage';
 import { AdminDesignationsPage } from './pages/admin/AdminDesignationsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { LoggerTest } from './components/LoggerTest';
-import { TokenDebugger } from './components/TokenDebugger';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -60,14 +58,6 @@ function App() {
 
           {/* Toast Notifications */}
           <Toaster />
-
-          {/* Debug Components (only in development) */}
-          {import.meta.env.DEV && (
-            <>
-              <LoggerTest />
-              <TokenDebugger />
-            </>
-          )}
         </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>

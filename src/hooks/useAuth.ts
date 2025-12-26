@@ -12,28 +12,16 @@ export const useAuth = () => {
         return user;
     };
 
-    // Admin login
+    // Unified login (works for both admin and user with role parameter)
     const login = async (credentials: LoginCredentials) => {
         const { user, token } = await authService.login(credentials);
         setAuth(user, token);
         return user;
     };
 
-    // User login
-    const userLogin = async (credentials: LoginCredentials) => {
-        const { user, token } = await authService.userLogin(credentials);
-        setAuth(user, token);
-        return user;
-    };
-
-    // Admin logout
+    // Unified logout (works for both admin and user)
     const logout = async () => {
-        const currentUser = user;
-        if (currentUser?.role === 'user') {
-            await authService.userLogout();
-        } else {
-            await authService.logout();
-        }
+        await authService.logout();
         clearAuth();
     };
 
@@ -42,7 +30,6 @@ export const useAuth = () => {
         isAuthenticated,
         signup,
         login,
-        userLogin,
         logout,
     };
 };

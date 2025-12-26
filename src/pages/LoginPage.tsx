@@ -11,7 +11,7 @@ import { showToast } from '@/utils/toast';
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
-    const { login, userLogin } = useAuth();
+    const { login } = useAuth();
     const [role, setRole] = useState<'admin' | 'user'>('user');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -26,11 +26,8 @@ export const LoginPage: React.FC = () => {
     const onSubmit = async (data: LoginFormData) => {
         try {
             setIsLoading(true);
-            if (role === 'admin') {
-                await login(data);
-            } else {
-                await userLogin(data);
-            }
+            // Pass role with credentials to unified login endpoint
+            await login({ ...data, role });
             showToast.success('Welcome back!');
             navigate('/dashboard');
         } catch (err: any) {
@@ -62,8 +59,8 @@ export const LoginPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setRole('user')}
                                 className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'user'
-                                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                        : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">User</p>
@@ -72,8 +69,8 @@ export const LoginPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setRole('admin')}
                                 className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'admin'
-                                        ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                        : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">Admin</p>

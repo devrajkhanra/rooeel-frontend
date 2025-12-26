@@ -9,6 +9,7 @@ export interface AuthUser {
 export interface LoginCredentials {
     email: string;
     password: string;
+    role: 'admin' | 'user'; // Required for unified login endpoint
 }
 
 export interface SignupCredentials {
@@ -26,6 +27,13 @@ export interface AuthState {
 
 export interface AuthResponse {
     access_token: string;
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        email: string;
+        role: 'admin' | 'user';
+    };
 }
 
 export interface SignupResponse {

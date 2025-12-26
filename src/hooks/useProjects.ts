@@ -88,3 +88,64 @@ export const useRemoveUser = () => {
         },
     });
 };
+
+// Assign designation to project
+export const useAssignDesignationToProject = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ projectId, designationId }: { projectId: number; designationId: number }) =>
+            projectService.assignDesignationToProject(projectId, designationId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: projectKeys.detail(variables.projectId) });
+            queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+        },
+    });
+};
+
+// Remove designation from project
+export const useRemoveDesignationFromProject = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ projectId, designationId }: { projectId: number; designationId: number }) =>
+            projectService.removeDesignationFromProject(projectId, designationId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: projectKeys.detail(variables.projectId) });
+            queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+        },
+    });
+};
+
+// Get project designations
+export const useProjectDesignations = (projectId: number) => {
+    return useQuery({
+        queryKey: [...projectKeys.detail(projectId), 'designations'],
+        queryFn: () => projectService.getProjectDesignations(projectId),
+        enabled: !!projectId,
+    });
+};
+
+// Set user designation within project
+export const useSetUserDesignation = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ projectId, userId, designationId }: { projectId: number; userId: number; designationId: number }) =>
+            projectService.setUserDesignation(projectId, userId, designationId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: projectKeys.detail(variables.projectId) });
+            queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+        },
+    });
+};
+
+// Remove user designation from project
+export const useRemoveUserDesignation = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ projectId, userId }: { projectId: number; userId: number }) =>
+            projectService.removeUserDesignation(projectId, userId),
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: projectKeys.detail(variables.projectId) });
+            queryClient.invalidateQueries({ queryKey: projectKeys.lists() });
+        },
+    });
+};

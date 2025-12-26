@@ -65,4 +65,44 @@ export const projectService = {
         logger.info(`User removed successfully. Remaining users: ${response.data.assignedUsers.join(', ')}`);
         return response.data;
     },
+
+    // Assign designation to project (admin only)
+    assignDesignationToProject: async (projectId: number, designationId: number): Promise<{ message: string }> => {
+        logger.info(`Assigning designation ${designationId} to project ${projectId}`);
+        const response = await apiClient.post<{ message: string }>(`/project/${projectId}/designations`, { designationId });
+        logger.info('Designation assigned to project successfully');
+        return response.data;
+    },
+
+    // Remove designation from project (admin only)
+    removeDesignationFromProject: async (projectId: number, designationId: number): Promise<{ message: string }> => {
+        logger.info(`Removing designation ${designationId} from project ${projectId}`);
+        const response = await apiClient.delete<{ message: string }>(`/project/${projectId}/designations/${designationId}`);
+        logger.info('Designation removed from project successfully');
+        return response.data;
+    },
+
+    // Get all designations assigned to a project
+    getProjectDesignations: async (projectId: number): Promise<any[]> => {
+        logger.debug(`Fetching designations for project ${projectId}`);
+        const response = await apiClient.get<any[]>(`/project/${projectId}/designations`);
+        logger.debug(`Fetched ${response.data.length} designations for project`);
+        return response.data;
+    },
+
+    // Set user designation within a project (admin only)
+    setUserDesignation: async (projectId: number, userId: number, designationId: number): Promise<any> => {
+        logger.info(`Setting designation ${designationId} for user ${userId} in project ${projectId}`);
+        const response = await apiClient.patch<any>(`/project/${projectId}/user/${userId}/designation`, { designationId });
+        logger.info('User designation set successfully');
+        return response.data;
+    },
+
+    // Remove user designation from project (admin only)
+    removeUserDesignation: async (projectId: number, userId: number): Promise<any> => {
+        logger.info(`Removing designation for user ${userId} from project ${projectId}`);
+        const response = await apiClient.delete<any>(`/project/${projectId}/user/${userId}/designation`);
+        logger.info('User designation removed successfully');
+        return response.data;
+    },
 };

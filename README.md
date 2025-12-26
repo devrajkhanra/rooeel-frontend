@@ -23,12 +23,14 @@ This application features a **Supabase-inspired design system** with:
 - **Dark Mode**: Built-in dark mode with optional light mode support
 - **Accessibility**: WCAG 2.1 AA compliant with keyboard navigation
 - **Performance**: Code splitting, lazy loading, and optimized bundle size
+- **Project-Designation Management**: Assign designations to projects and users
+- **Request Management**: User change requests with admin approval workflow
 
 ## 📋 Prerequisites
 
 - [Node.js](https://nodejs.org/) (v16 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- Rooeel Backend API running (default: `http://localhost:3000`)
+- Rooeel Backend API running (default: `http://localhost:5000`)
 
 ## 🛠️ Installation
 
@@ -41,7 +43,7 @@ This application features a **Supabase-inspired design system** with:
    
    Create a `.env` file in the root directory:
    ```env
-   VITE_API_BASE_URL=http://localhost:3000
+   VITE_API_BASE_URL=http://localhost:5000
    ```
 
 ## 🏃 Running the Application
@@ -67,9 +69,13 @@ npm run preview
 ```
 src/
 ├── components/          # Reusable UI components
-│   ├── ui/             # Base UI components (Button, Input, Card, etc.)
+│   ├── ui/             # Base UI components (Button, Input, Card, Badge, etc.)
 │   ├── layout/         # Layout components (Header, Sidebar, AppLayout)
-│   └── auth/           # Authentication components (ProtectedRoute)
+│   ├── auth/           # Authentication components (ProtectedRoute)
+│   ├── admin/          # Admin-specific components
+│   ├── user/           # User-specific components
+│   ├── project/        # Project management components
+│   └── designation/    # Designation management components
 ├── pages/              # Page components
 │   ├── admin/          # Admin management pages
 │   ├── user/           # User management pages
@@ -81,21 +87,31 @@ src/
 │   ├── api.client.ts   # Axios instance with interceptors
 │   ├── auth.service.ts # Authentication service
 │   ├── admin.service.ts # Admin CRUD service
-│   └── user.service.ts # User CRUD service
+│   ├── user.service.ts # User CRUD service
+│   ├── project.service.ts # Project management service
+│   ├── designation.service.ts # Designation management service
+│   └── request.service.ts # Request management service
 ├── hooks/              # Custom React hooks
 │   ├── useAuth.ts      # Authentication hook
 │   ├── useAdmins.ts    # Admin CRUD hooks
-│   └── useUsers.ts     # User CRUD hooks
+│   ├── useUsers.ts     # User CRUD hooks
+│   ├── useProjects.ts  # Project management hooks
+│   ├── useDesignations.ts # Designation management hooks
+│   └── useRequests.ts  # Request management hooks
 ├── types/              # TypeScript type definitions
-│   ├── api.types.ts    # API models (Admin, User, etc.)
+│   ├── api.types.ts    # API models (Admin, User, Project, Designation, etc.)
 │   └── auth.types.ts   # Auth types
 ├── utils/              # Utility functions
 │   ├── cn.ts           # Class name utility
 │   ├── validation.ts   # Zod schemas
-│   └── format.ts       # Formatting utilities
+│   ├── format.ts       # Formatting utilities
+│   ├── logger.ts       # Client-side logger
+│   └── toast.ts        # Toast notifications
 ├── config/             # Configuration
 │   ├── constants.ts    # App constants and routes
 │   └── validation.constants.ts # Validation rules
+├── stores/             # State management
+│   └── auth.store.ts   # Authentication store
 ├── App.tsx             # Main app component with routing
 ├── main.tsx            # Application entry point
 └── index.css           # Global styles and design tokens
@@ -156,6 +172,10 @@ The application supports two types of authentication:
 | `/signup` | Admin signup page | Public |
 | `/dashboard` | Dashboard home | Protected |
 | `/users` | User management | Protected (Admin) |
+| `/projects` | Project management | Protected |
+| `/designations` | Designation management | Protected (Admin) |
+| `/requests` | My change requests | Protected (User) |
+| `/admin-requests` | Manage user requests | Protected (Admin) |
 | `/admin/:id/edit` | Edit admin profile | Protected (Admin) |
 
 ## 🧩 Key Technologies
@@ -174,29 +194,96 @@ The application supports two types of authentication:
 
 ## 🎯 API Integration
 
-The frontend integrates with the Rooeel Backend API:
+The frontend integrates with the Rooeel Backend API running on `http://localhost:5000`:
 
 ### Authentication Endpoints
-- `POST /auth/signup` - Admin signup
-- `POST /auth/login` - Admin login
-- `POST /auth/logout` - Admin logout
-- `POST /auth/user/login` - User login
-- `POST /auth/user/logout` - User logout
 
-### Admin Endpoints
-- `GET /admin` - Fetch all admins
-- `GET /admin/:id` - Fetch single admin
-- `PATCH /admin/:id` - Update admin
-- `DELETE /admin/:id` - Delete admin
+#### Admin Signup
+```typescript
+POST /auth/signup
+Body: { firstName, lastName, email, password }
+Response: { access_token, admin }
+```
+
+#### Admin Login
+```typescript
+POST /auth/login
+Body: { email, password }
+Response: { access_token }
+```
+
+#### User Login
+```typescript
+POST /auth/user/login
+Body: { email, password }
+Response: { access_token }
+```
+
+#### Logout
+```typescript
+POST /auth/logout (admin)
+POST /auth/user/logout (user)
+Response: { message }
+```
+
+### Admin Management Endpoints
+
+```typescript
+GET /admin              // Get all admins
+GET /admin/:id          // Get admin by ID
+PATCH /admin/:id        // Update admin
+DELETE /admin/:id       // Delete admin
+```
 
 **Note**: Admins can only be created via `/auth/signup` endpoint
 
-### User Endpoints
-- `POST /user` - Create new user (admin only)
-- `GET /user` - Fetch all users
-- `GET /user/:id` - Fetch single user
-- `PATCH /user/:id` - Update user
-- `DELETE /user/:id` - Delete user
+### User Management Endpoints
+
+```typescript
+POST /user              // Create user (admin only)
+GET /user               // Get all users
+GET /user/:id           // Get user by ID
+PATCH /user/:id         // Update user
+DELETE /user/:id        // Delete user
+```
+
+### Project Management Endpoints
+
+```typescript
+POST /project                           // Create project (admin only)
+GET /project                            // Get all projects (filtered by role)
+GET /project/:id                        // Get project by ID
+PATCH /project/:id                      // Update project (admin only)
+DELETE /project/:id                     // Delete project (admin only)
+POST /project/:id/assign-user           // Assign user to project
+DELETE /project/:id/remove-user/:userId // Remove user from project
+POST /project/:id/designations          // Assign designation to project
+DELETE /project/:id/designations/:designationId // Remove designation from project
+GET /project/:id/designations           // Get project designations
+PATCH /project/:id/user/:userId/designation // Set user designation
+DELETE /project/:id/user/:userId/designation // Remove user designation
+```
+
+### Designation Management Endpoints
+
+```typescript
+POST /designation       // Create designation (admin only)
+GET /designation        // Get all designations
+GET /designation/:id    // Get designation by ID
+PATCH /designation/:id  // Update designation (admin only)
+DELETE /designation/:id // Delete designation (admin only)
+```
+
+### Request Management Endpoints
+
+```typescript
+POST /request                   // Create change request (user only)
+GET /request/my-requests        // Get my requests (user only)
+GET /request/admin-requests     // Get admin requests (admin only)
+GET /request/:id                // Get request by ID
+PATCH /request/:id/approve      // Approve request (admin only)
+PATCH /request/:id/reject       // Reject request (admin only)
+```
 
 ### Request/Response Handling
 - Automatic JWT token injection via Axios interceptors
@@ -264,11 +351,34 @@ npx tsc --noEmit
 - Quick access cards for getting started
 - Clean, minimal layout
 
-### User Management
+### User Management (Admin Only)
+- Create new users
 - View all registered users
+- Update user information
 - Delete users
 - Display user information (name, email, creation date)
 - Active status badges
+
+### Project Management
+- Create and manage projects (admin)
+- View assigned projects (user)
+- Assign users to projects
+- Set project status (active, inactive, completed)
+- Manage project designations
+- Assign designations to users within projects
+
+### Designation Management (Admin Only)
+- Create job roles/designations
+- Update designation information
+- Delete designations
+- Assign designations to projects
+- Set user designations within projects
+
+### Request Management
+- Users can request profile changes (firstName, lastName, email, password)
+- Admins receive and review change requests
+- Approve/reject requests
+- Automatic profile updates on approval (except password)
 
 ### Admin Management
 - Edit admin profile
@@ -288,11 +398,56 @@ All components follow Supabase's design aesthetic:
 - **Button**: Solid green primary, subtle borders for secondary
 - **Card**: Minimal with 1px borders, no shadows
 - **Input**: Green focus state, clean borders
-- **Badge**: Color-coded status indicators
+- **Badge**: Color-coded status indicators (default, secondary, success, warning, danger, info)
 - **Sidebar**: Icon-only navigation (64px width)
 - **Header**: Minimal black header with user menu
 
-## 📝 License
+## � Database Schema Integration
+
+The frontend types align with the backend database schema:
+
+### Admin
+- `id`, `firstName`, `lastName`, `email`, `createdAt`
+- Relations: Creates users, receives requests, owns projects
+
+### User
+- `id`, `firstName`, `lastName`, `email`, `createdBy`, `createdAt`
+- Relations: Created by admin, can make requests, assigned to projects
+
+### Project
+- `id`, `name`, `description`, `status`, `createdBy`, `createdAt`, `updatedAt`
+- Relations: Owned by admin, has assigned users, has designations
+
+### Designation
+- `id`, `name`, `description`, `createdAt`, `updatedAt`
+- Relations: Can be assigned to projects
+
+### ProjectUser (Join Table)
+- `id`, `projectId`, `userId`, `designationId`, `assignedAt`
+- Links users to projects with optional designations
+
+### UserRequest
+- `id`, `userId`, `adminId`, `requestType`, `currentValue`, `requestedValue`, `status`, `createdAt`, `updatedAt`
+- Tracks user change requests
+
+## 🔄 State Management
+
+### TanStack Query (React Query)
+- Server state management
+- Automatic caching and invalidation
+- Optimistic updates
+- Background refetching
+
+### Query Keys Structure
+```typescript
+adminKeys: ['admins', 'list', { id }]
+userKeys: ['users', 'list', { id }]
+projectKeys: ['projects', 'list', { id }, 'designations']
+designationKeys: ['designations', 'list', { id }]
+requestKeys: ['requests', 'my-requests', 'admin-requests', { id }]
+```
+
+## �📝 License
 
 This project is part of the Rooeel application suite.
 
@@ -303,3 +458,22 @@ This project is part of the Rooeel application suite.
 3. Test your changes thoroughly
 4. Update documentation as needed
 5. Maintain consistency with Supabase design aesthetic
+
+---
+
+## 🆕 Recent Updates
+
+### Project-Designation Features
+- Added ability to assign designations to specific projects
+- Users can have different designations in different projects
+- Project designation management UI
+- User designation badges in project cards
+
+### Enhanced Components
+- `ProjectDesignationManager`: Manage project designations and user assignments
+- `ProjectCard`: Display user designations as badges
+- `Badge`: Added secondary variant for designation display
+
+### API Service Enhancements
+- `projectService`: Added 5 new methods for designation management
+- `useProjects`: Added 5 new React Query hooks for designation operations

@@ -98,9 +98,11 @@ export interface ProjectUser {
     id: number;
     projectId: number;
     userId: number;
+    designationId?: number;
     assignedAt: string;
     // Nested user data from backend
     user?: User;
+    designation?: Designation;
 }
 
 export interface CreateProjectDto {
@@ -118,6 +120,15 @@ export interface UpdateProjectDto {
 export interface AssignUserDto {
     userId: number;
 }
+
+export interface SetUserDesignationDto {
+    designationId: number;
+}
+
+export interface AssignDesignationDto {
+    designationId: number;
+}
+
 
 // Designation Management Types
 export interface Designation {

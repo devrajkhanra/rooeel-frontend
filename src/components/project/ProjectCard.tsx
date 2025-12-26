@@ -39,21 +39,36 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
             )}
 
             {/* Metadata */}
-            <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)] pt-3 border-t border-[var(--color-border)]">
-                <div className="flex items-center gap-1.5" title="Created date">
-                    <Calendar className="h-3.5 w-3.5" />
-                    <span>{new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                </div>
-                {project.users && project.users.length > 0 && (
-                    <div className="flex items-center gap-1.5" title="Team members">
-                        <Users className="h-3.5 w-3.5" />
-                        <span>{project.users.length} member{project.users.length !== 1 ? 's' : ''}</span>
+            <div className="space-y-2">
+                <div className="flex items-center gap-4 text-xs text-[var(--color-text-secondary)] pt-3 border-t border-[var(--color-border)]">
+                    <div className="flex items-center gap-1.5" title="Created date">
+                        <Calendar className="h-3.5 w-3.5" />
+                        <span>{new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     </div>
-                )}
-                {project.admin && (
-                    <div className="flex items-center gap-1.5 ml-auto" title="Project owner">
-                        <UserIcon className="h-3.5 w-3.5" />
-                        <span className="truncate max-w-[120px]">{project.admin.firstName} {project.admin.lastName}</span>
+                    {project.users && project.users.length > 0 && (
+                        <div className="flex items-center gap-1.5" title="Team members">
+                            <Users className="h-3.5 w-3.5" />
+                            <span>{project.users.length} member{project.users.length !== 1 ? 's' : ''}</span>
+                        </div>
+                    )}
+                    {project.admin && (
+                        <div className="flex items-center gap-1.5 ml-auto" title="Project owner">
+                            <UserIcon className="h-3.5 w-3.5" />
+                            <span className="truncate max-w-[120px]">{project.admin.firstName} {project.admin.lastName}</span>
+                        </div>
+                    )}
+                </div>
+
+                {/* User Designations */}
+                {project.users && project.users.some(u => u.designation) && (
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                        {project.users
+                            .filter(u => u.designation)
+                            .map(u => (
+                                <Badge key={u.id} variant="secondary" className="text-xs">
+                                    {u.user?.firstName} - {u.designation?.name}
+                                </Badge>
+                            ))}
                     </div>
                 )}
             </div>

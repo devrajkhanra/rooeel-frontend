@@ -26,11 +26,25 @@ export const AdminRequestsPage: React.FC = () => {
     }
 
     if (error) {
+        const errorMessage = (error as any)?.response?.data?.message ||
+            (error as any)?.message ||
+            'Failed to load requests';
+
         return (
             <div className="p-6">
+                <div className="mb-6">
+                    <h1 className="text-2xl font-semibold mb-1">User Requests</h1>
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                        Review and manage change requests from your users
+                    </p>
+                </div>
                 <Card>
                     <CardContent className="py-8 text-center">
-                        <p className="text-[var(--color-error)]">Failed to load requests</p>
+                        <p className="text-[var(--color-error)] mb-2">Error loading requests</p>
+                        <p className="text-sm text-[var(--color-text-secondary)]">{errorMessage}</p>
+                        <p className="text-xs text-[var(--color-text-tertiary)] mt-4">
+                            This may occur if there are no users assigned to you yet, or if there's a server issue.
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -57,8 +71,8 @@ export const AdminRequestsPage: React.FC = () => {
                                     key={status}
                                     onClick={() => setStatusFilter(status)}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${statusFilter === status
-                                            ? 'bg-[var(--color-primary)] text-white'
-                                            : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
+                                        ? 'bg-[var(--color-primary)] text-white'
+                                        : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)]'
                                         }`}
                                 >
                                     {status.charAt(0).toUpperCase() + status.slice(1)}

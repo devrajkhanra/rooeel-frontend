@@ -1,7 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL, STORAGE_KEYS } from '@/config/constants';
 
-
 // Create axios instance
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
@@ -16,7 +15,6 @@ apiClient.interceptors.request.use(
         const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
-        } else {
         }
         return config;
     },
@@ -31,15 +29,11 @@ apiClient.interceptors.response.use(
         return response;
     },
     (error: AxiosError) => {
-        const status = error.response?.status;
-        const url = error.config?.url;
-
-        if (status === 401) {
+        if (error.response?.status === 401) {
             // Clear auth data on unauthorized
             localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
             localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
             window.location.href = '/login';
-        } else {
         }
         return Promise.reject(error);
     }

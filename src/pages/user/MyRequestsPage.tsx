@@ -6,7 +6,6 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Plus, ChevronUp } from 'lucide-react';
 import { RequestForm } from '@/components/user/RequestForm';
 import { MyRequestsTable } from '@/components/user/MyRequestsTable';
-import { UserDataDebugger } from '@/components/UserDataDebugger';
 
 export const MyRequestsPage: React.FC = () => {
     const { data: requests, isLoading, error } = useMyRequests();
@@ -83,9 +82,6 @@ export const MyRequestsPage: React.FC = () => {
                     <MyRequestsTable requests={requests || []} />
                 </CardContent>
             </Card>
-
-            {/* Debugging Tools */}
-            <UserDataDebugger />
         </div>
     );
 };

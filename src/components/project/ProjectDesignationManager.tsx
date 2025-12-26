@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useDesignations } from '@/hooks/useDesignations';
 import {
     useProjectDesignations,
@@ -28,21 +28,47 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
     const setUserDesignation = useSetUserDesignation();
     const removeUserDesignation = useRemoveUserDesignation();
 
+    // Debug logging
+    useEffect(() => {
+        console.log('ProjectDesignationManager Debug:', {
+            projectId: project.id,
+            allDesignations,
+            projectDesignations,
+            designationsLoading,
+            projectDesignationsLoading
+        });
+    }, [project.id, allDesignations, projectDesignations, designationsLoading, projectDesignationsLoading]);
+
     // Enrich project designations with full designation data using useMemo
     // Backend returns ProjectDesignation objects which may or may not include the full designation
     // We enrich them with data from allDesignations to ensure we always have name and description
     const enrichedProjectDesignations = useMemo(() => {
-        return projectDesignations.map((pd: any) => {
+        if (designationsLoading || !allDesignations.length) {
+            console.log('Skipping enrichment - designations not loaded yet');
+            return [];
+        }
+
+        const enriched = projectDesignations.map((pd: any) => {
             // Always try to get the latest designation data from allDesignations
             const fullDesignation = allDesignations.find(d => d.id === pd.designationId);
+
+            if (!fullDesignation) {
+                console.warn(`Designation ID ${pd.designationId} not found in allDesignations`, {
+                    pd,
+                    allDesignations
+                });
+            }
 
             return {
                 ...pd,
                 // Use fullDesignation if found, otherwise fall back to existing pd.designation
-                designation: fullDesignation || pd.designation
+                designation: fullDesignation || pd.designation || null
             };
         });
-    }, [allDesignations, projectDesignations]);
+
+        console.log('Enriched project designations:', enriched);
+        return enriched;
+    }, [allDesignations, projectDesignations, designationsLoading]);
 
     // Get designations not yet assigned to this project
     const availableDesignations = useMemo(() => {
@@ -100,6 +126,17 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
         }
     };
 
+    // Show loading state while designations are being fetched
+    if (designationsLoading || projectDesignationsLoading) {
+        return (
+            <div className="space-y-6">
+                <Card className="p-6">
+                    <p className="text-sm text-[var(--color-text-secondary)]">Loading designations...</p>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             {/* Project Designations Section */}
@@ -127,7 +164,7 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
                                     )}
                                     {!pd.designation && (
                                         <p className="text-xs text-[var(--color-error)]">
-                                            Error: Designation data not loaded
+                                            Error: Designation data not loaded. Try refreshing the page.
                                         </p>
                                     )}
                                 </div>
@@ -167,6 +204,12 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
                             Add
                         </Button>
                     </div>
+                )}
+
+                {availableDesignations.length === 0 && allDesignations.length > 0 && (
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                        All available designations have been assigned to this project.
+                    </p>
                 )}
             </Card>
 
@@ -211,11 +254,13 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
                                                 className="px-3 py-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                             >
                                                 <option value="">Select designation...</option>
-                                                {enrichedProjectDesignations.map((pd: any) => (
-                                                    <option key={pd.id} value={pd.designationId}>
-                                                        {pd.designation?.name}
-                                                    </option>
-                                                ))}
+                                                {enrichedProjectDesignations
+                                                    .filter((pd: any) => pd.designation) // Only show designations that loaded successfully
+                                                    .map((pd: any) => (
+                                                        <option key={pd.id} value={pd.designationId}>
+                                                            {pd.designation.name}
+                                                        </option>
+                                                    ))}
                                             </select>
                                             <Button
                                                 variant="ghost"
@@ -231,7 +276,8 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
                                                 variant="secondary"
                                                 size="sm"
                                                 onClick={() => setAssigningToUserId(pu.userId)}
-                                                disabled={enrichedProjectDesignations.length === 0}
+                                                disabled={enrichedProjectDesignations.filter((pd: any) => pd.designation).length === 0}
+                                                title={enrichedProjectDesignations.filter((pd: any) => pd.designation).length === 0 ? 'No designations available. Add designations to the project first.' : ''}
                                             >
                                                 {pu.designation ? 'Change' : 'Assign'}
                                             </Button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Users, FileText, Folder, TrendingUp } from 'lucide-react';
 
@@ -34,6 +35,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend, trendUp 
 
 export const DashboardPage: React.FC = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -98,22 +100,34 @@ export const DashboardPage: React.FC = () => {
                     <div className="space-y-2">
                         {user?.role === 'admin' ? (
                             <>
-                                <button className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]">
+                                <button
+                                    onClick={() => navigate('/admin/projects')}
+                                    className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]"
+                                >
                                     <p className="font-medium text-sm">Create New Project</p>
                                     <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">Start a new project and assign team members</p>
                                 </button>
-                                <button className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]">
+                                <button
+                                    onClick={() => navigate('/users')}
+                                    className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]"
+                                >
                                     <p className="font-medium text-sm">Add New User</p>
                                     <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">Invite a new team member to the platform</p>
                                 </button>
                             </>
                         ) : (
                             <>
-                                <button className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]">
+                                <button
+                                    onClick={() => navigate('/projects')}
+                                    className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]"
+                                >
                                     <p className="font-medium text-sm">View My Projects</p>
                                     <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">See all projects you're assigned to</p>
                                 </button>
-                                <button className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]">
+                                <button
+                                    onClick={() => navigate('/my-requests')}
+                                    className="w-full text-left px-4 py-3 rounded-lg bg-[var(--color-background)] hover:bg-[var(--color-surface-hover)] transition-colors border border-[var(--color-border)]"
+                                >
                                     <p className="font-medium text-sm">Submit Request</p>
                                     <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">Request changes to your profile information</p>
                                 </button>

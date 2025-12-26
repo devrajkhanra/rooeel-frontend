@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, User, ChevronDown, Sun, Moon } from 'lucide-react';
+import { LogOut, User, ChevronDown, Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ui/Breadcrumbs';
@@ -28,7 +28,11 @@ const getBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
     return breadcrumbs;
 };
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+    onMenuClick?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuth();
@@ -44,14 +48,25 @@ export const Header: React.FC = () => {
 
     return (
         <header className="h-14 border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-0 z-40">
-            <div className="h-full px-6 flex items-center justify-between">
-                {/* Breadcrumbs */}
-                <div className="flex-1">
-                    {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+            <div className="h-full px-3 md:px-6 flex items-center justify-between gap-2">
+                {/* Mobile Menu Button + Breadcrumbs */}
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <button
+                        onClick={onMenuClick}
+                        className="md:hidden p-2 hover:bg-[var(--color-surface-hover)] rounded-lg"
+                        aria-label="Open menu"
+                    >
+                        <Menu className="h-5 w-5" />
+                    </button>
+
+                    {/* Breadcrumbs */}
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                        {breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+                    </div>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 md:gap-2">
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
@@ -69,15 +84,15 @@ export const Header: React.FC = () => {
                     <div className="relative">
                         <button
                             onClick={() => setShowUserMenu(!showUserMenu)}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
+                            className="flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-md hover:bg-[var(--color-surface-hover)] transition-colors"
                         >
                             <div className="w-7 h-7 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
                                 <User className="h-4 w-4 text-black" />
                             </div>
-                            <span className="text-sm font-medium hidden sm:inline">
+                            <span className="text-sm font-medium hidden lg:inline max-w-[150px] truncate">
                                 {user?.email}
                             </span>
-                            <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)]" />
+                            <ChevronDown className="h-4 w-4 text-[var(--color-text-tertiary)] hidden md:block" />
                         </button>
 
                         {/* Dropdown Menu */}
@@ -89,7 +104,7 @@ export const Header: React.FC = () => {
                                 />
                                 <div className="absolute right-0 mt-2 w-56 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg z-20 animate-slide-down">
                                     <div className="p-3 border-b border-[var(--color-border)]">
-                                        <p className="text-sm font-medium">{user?.email}</p>
+                                        <p className="text-sm font-medium truncate">{user?.email}</p>
                                         <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5 capitalize">
                                             {user?.role}
                                         </p>

@@ -37,9 +37,7 @@ export const signupSchema = z.object({
 
 // Request validation schema
 export const requestSchema = z.object({
-    requestType: z.enum(['firstName', 'lastName', 'email', 'password'], {
-        required_error: 'Please select a request type',
-    }),
+    requestType: z.enum(['firstName', 'lastName', 'email', 'password']),
     requestedValue: z.string().min(1, 'Requested value is required'),
     currentPassword: z.string().optional(),
 }).refine((data) => {
@@ -54,24 +52,19 @@ export const requestSchema = z.object({
 }).refine((data) => {
     // Validate requested value based on request type
     if (data.requestType === 'firstName' || data.requestType === 'lastName') {
-        return data.requestedValue.length >= 3;
+        return data.requestedValue.length >= 2; // Updated to match new backend requirement
     }
     if (data.requestType === 'email') {
         return z.string().email().safeParse(data.requestedValue).success;
     }
     if (data.requestType === 'password') {
-        return data.requestedValue.length >= 6;
+        return data.requestedValue.length >= 8; // Updated to match new backend requirement
     }
     return true;
-}, (data) => ({
-    message:
-        data.requestType === 'firstName' || data.requestType === 'lastName'
-            ? 'Name must be at least 3 characters'
-            : data.requestType === 'email'
-                ? 'Invalid email address'
-                : 'Password must be at least 6 characters',
+}, {
+    message: 'Invalid value for the selected field type',
     path: ['requestedValue'],
-}));
+});
 
 export type AdminFormData = z.infer<typeof adminSchema>;
 export type UpdateAdminFormData = z.infer<typeof updateAdminSchema>;

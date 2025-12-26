@@ -28,34 +28,20 @@ export const ProjectDesignationManager = ({ project }: ProjectDesignationManager
     const setUserDesignation = useSetUserDesignation();
     const removeUserDesignation = useRemoveUserDesignation();
 
-    // Debug logging
-    console.log('ProjectDesignationManager Debug:', {
-        projectId: project.id,
-        allDesignations,
-        projectDesignations,
-        designationsLoading,
-        projectDesignationsLoading
-    });
-
     // Enrich project designations with full designation data using useMemo
-    // Backend might return just IDs, so we map them to full objects
+    // Backend returns ProjectDesignation objects which may or may not include the full designation
+    // We enrich them with data from allDesignations to ensure we always have name and description
     const enrichedProjectDesignations = useMemo(() => {
-        const enriched = projectDesignations.map((pd: any) => {
-            // Always try to enrich with latest designation data
+        return projectDesignations.map((pd: any) => {
+            // Always try to get the latest designation data from allDesignations
             const fullDesignation = allDesignations.find(d => d.id === pd.designationId);
-
-            if (!fullDesignation && !pd.designation) {
-                console.warn(`Designation ${pd.designationId} not found in allDesignations or pd.designation`);
-            }
 
             return {
                 ...pd,
+                // Use fullDesignation if found, otherwise fall back to existing pd.designation
                 designation: fullDesignation || pd.designation
             };
         });
-
-        console.log('Enriched Project Designations:', enriched);
-        return enriched;
     }, [allDesignations, projectDesignations]);
 
     // Get designations not yet assigned to this project

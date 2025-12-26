@@ -55,8 +55,14 @@ export const UserListPage: React.FC = () => {
         return projectUser?.designation;
     };
 
-    // Get available designations for a project (from all designations created by admin)
-    const getAvailableDesignations = () => {
+    // Get designations assigned to a specific project
+    // NOTE: Currently returns all designations. In production, this should fetch
+    // project-specific designations from the backend API endpoint:
+    // GET /project/:id/designations
+    const getProjectDesignations = (projectId: number) => {
+        // TODO: Implement proper project-designation fetching
+        // For now, return all designations to allow assignment
+        // The backend will validate if the designation is assigned to the project
         return allDesignations || [];
     };
 
@@ -271,7 +277,7 @@ export const UserListPage: React.FC = () => {
 
                                     {/* Expanded Row - Project Designation Management */}
                                     {isExpanded && isAdmin && userProjects.length > 0 && (
-                                        <TableRow className="bg-zinc-900/50">
+                                        <TableRow className="bg-[var(--color-surface-secondary)]">
                                             <TableCell colSpan={8} className="p-0">
                                                 <div className="px-6 py-4 space-y-3">
                                                     <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
@@ -279,12 +285,12 @@ export const UserListPage: React.FC = () => {
                                                     </h4>
                                                     {userProjects.map((project) => {
                                                         const currentDesignation = getUserDesignationInProject(user.id, project.id);
-                                                        const availableDesignations = getAvailableDesignations();
+                                                        const availableDesignations = getProjectDesignations(project.id);
 
                                                         return (
                                                             <div
                                                                 key={project.id}
-                                                                className="flex items-center justify-between p-3 bg-zinc-800/50 rounded-lg border border-zinc-700"
+                                                                className="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]"
                                                             >
                                                                 <div className="flex-1">
                                                                     <p className="font-medium text-sm">{project.name}</p>
@@ -306,13 +312,13 @@ export const UserListPage: React.FC = () => {
                                                                                         handleSetDesignation(project.id, user.id, designationId);
                                                                                     }
                                                                                 }}
-                                                                                className="px-3 py-1.5 bg-zinc-900 border border-zinc-700 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                                                className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                                                                 disabled={setUserDesignation.isPending}
                                                                             >
                                                                                 <option value="">Change...</option>
                                                                                 {availableDesignations
-                                                                                    .filter(d => d.id !== currentDesignation.id)
-                                                                                    .map((d) => (
+                                                                                    .filter((d: any) => d.id !== currentDesignation.id)
+                                                                                    .map((d: any) => (
                                                                                         <option key={d.id} value={d.id}>
                                                                                             {d.name}
                                                                                         </option>
@@ -336,11 +342,11 @@ export const UserListPage: React.FC = () => {
                                                                                     handleSetDesignation(project.id, user.id, designationId);
                                                                                 }
                                                                             }}
-                                                                            className="px-3 py-1.5 bg-zinc-900 border border-zinc-700 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                                                            className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                                                             disabled={setUserDesignation.isPending}
                                                                         >
                                                                             <option value="">Assign designation...</option>
-                                                                            {availableDesignations.map((d) => (
+                                                                            {availableDesignations.map((d: any) => (
                                                                                 <option key={d.id} value={d.id}>
                                                                                     {d.name}
                                                                                 </option>

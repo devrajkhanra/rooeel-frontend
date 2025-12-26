@@ -9,6 +9,7 @@ import { logger } from '../utils/logger';
 
 export function LoggerTest() {
     const [bufferSize, setBufferSize] = useState(logger.getBufferSize());
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const isRecording = true; // Always recording
 
     // Update buffer size every second
@@ -66,6 +67,82 @@ export function LoggerTest() {
         alert('Logs cleared!');
     };
 
+    const toggleCollapse = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
+    // Collapsed state - just an icon
+    if (isCollapsed) {
+        return (
+            <div
+                onClick={toggleCollapse}
+                style={{
+                    position: 'fixed',
+                    bottom: 20,
+                    right: 20,
+                    width: 56,
+                    height: 56,
+                    background: '#1f2937',
+                    borderRadius: '50%',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                    zIndex: 9999,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                title={`Logger Test - ${bufferSize} logs`}
+            >
+                <div style={{ position: 'relative' }}>
+                    <span style={{ fontSize: 24 }}>📊</span>
+                    {isRecording && (
+                        <div style={{
+                            position: 'absolute',
+                            top: -2,
+                            right: -2,
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            background: '#10b981',
+                            animation: 'pulse 2s infinite',
+                            border: '2px solid #1f2937'
+                        }} />
+                    )}
+                    {bufferSize > 0 && (
+                        <div style={{
+                            position: 'absolute',
+                            bottom: -4,
+                            right: -4,
+                            background: '#3b82f6',
+                            color: '#fff',
+                            borderRadius: '50%',
+                            width: 20,
+                            height: 20,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: 10,
+                            fontWeight: 'bold',
+                            border: '2px solid #1f2937'
+                        }}>
+                            {bufferSize > 99 ? '99+' : bufferSize}
+                        </div>
+                    )}
+                </div>
+                <style>{`
+                    @keyframes pulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.5; }
+                    }
+                `}</style>
+            </div>
+        );
+    }
+
+    // Expanded state - full card
     return (
         <div style={{
             position: 'fixed',
@@ -75,19 +152,40 @@ export function LoggerTest() {
             background: '#1f2937',
             borderRadius: 8,
             boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-            zIndex: 9999
+            zIndex: 9999,
+            minWidth: 280
         }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <h3 style={{ color: '#fff', margin: 0 }}>Logger Test</h3>
-                {isRecording && (
-                    <div style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: '50%',
-                        background: '#10b981',
-                        animation: 'pulse 2s infinite'
-                    }} title="Recording active" />
-                )}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3 style={{ color: '#fff', margin: 0 }}>Logger Test</h3>
+                    {isRecording && (
+                        <div style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            background: '#10b981',
+                            animation: 'pulse 2s infinite'
+                        }} title="Recording active" />
+                    )}
+                </div>
+                <button
+                    onClick={toggleCollapse}
+                    style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#9ca3af',
+                        cursor: 'pointer',
+                        fontSize: 20,
+                        padding: 4,
+                        lineHeight: 1,
+                        transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}
+                    title="Collapse"
+                >
+                    ×
+                </button>
             </div>
 
             <div style={{ color: '#9ca3af', fontSize: 12, marginBottom: 12 }}>

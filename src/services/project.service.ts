@@ -69,7 +69,7 @@ export const projectService = {
     // Assign designation to project (admin only)
     assignDesignationToProject: async (projectId: number, designationId: number): Promise<{ message: string }> => {
         logger.info(`Assigning designation ${designationId} to project ${projectId}`);
-        const response = await apiClient.post<{ message: string }>(`/project/${projectId}/designations`, { designationId });
+        const response = await apiClient.post<{ message: string }>(`/project/${projectId}/assign-designation`, { designationId });
         logger.info('Designation assigned to project successfully');
         return response.data;
     },

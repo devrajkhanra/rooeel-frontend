@@ -23,7 +23,7 @@ This application features a **Supabase-inspired design system** with:
 - **Dark Mode**: Built-in dark mode with optional light mode support
 - **Accessibility**: WCAG 2.1 AA compliant with keyboard navigation
 - **Performance**: Code splitting, lazy loading, and optimized bundle size
-- **Project-Designation Management**: Assign designations to projects and users
+
 - **Request Management**: User change requests with admin approval workflow
 
 ## 📋 Prerequisites
@@ -75,8 +75,7 @@ src/
 │   ├── admin/          # Admin-specific components
 │   ├── user/           # User-specific components
 │   ├── project/        # Project management components
-│   └── designation/    # Designation management components
-├── pages/              # Page components
+
 │   ├── admin/          # Admin management pages
 │   ├── user/           # User management pages
 │   ├── LoginPage.tsx   # Login page
@@ -89,15 +88,14 @@ src/
 │   ├── admin.service.ts # Admin CRUD service
 │   ├── user.service.ts # User CRUD service
 │   ├── project.service.ts # Project management service
-│   ├── designation.service.ts # Designation management service
+
 │   └── request.service.ts # Request management service
 ├── hooks/              # Custom React hooks
 │   ├── useAuth.ts      # Authentication hook
 │   ├── useAdmins.ts    # Admin CRUD hooks
 │   ├── useUsers.ts     # User CRUD hooks
 │   ├── useProjects.ts  # Project management hooks
-│   ├── useDesignations.ts # Designation management hooks
-│   └── useRequests.ts  # Request management hooks
+│   ├── useRequests.ts  # Request management hooks
 ├── types/              # TypeScript type definitions
 │   ├── api.types.ts    # API models (Admin, User, Project, Designation, etc.)
 │   └── auth.types.ts   # Auth types
@@ -173,7 +171,7 @@ The application supports two types of authentication:
 | `/dashboard` | Dashboard home | Protected |
 | `/users` | User management | Protected (Admin) |
 | `/projects` | Project management | Protected |
-| `/designations` | Designation management | Protected (Admin) |
+
 | `/requests` | My change requests | Protected (User) |
 | `/admin-requests` | Manage user requests | Protected (Admin) |
 | `/admin/:id/edit` | Edit admin profile | Protected (Admin) |
@@ -256,23 +254,11 @@ GET /project/:id                        // Get project by ID
 PATCH /project/:id                      // Update project (admin only)
 DELETE /project/:id                     // Delete project (admin only)
 POST /project/:id/assign-user           // Assign user to project
+POST /project/:id/assign-user           // Assign user to project
 DELETE /project/:id/remove-user/:userId // Remove user from project
-POST /project/:id/designations          // Assign designation to project
-DELETE /project/:id/designations/:designationId // Remove designation from project
-GET /project/:id/designations           // Get project designations
-PATCH /project/:id/user/:userId/designation // Set user designation
-DELETE /project/:id/user/:userId/designation // Remove user designation
 ```
 
-### Designation Management Endpoints
 
-```typescript
-POST /designation       // Create designation (admin only)
-GET /designation        // Get all designations
-GET /designation/:id    // Get designation by ID
-PATCH /designation/:id  // Update designation (admin only)
-DELETE /designation/:id // Delete designation (admin only)
-```
 
 ### Request Management Endpoints
 
@@ -364,15 +350,7 @@ npx tsc --noEmit
 - View assigned projects (user)
 - Assign users to projects
 - Set project status (active, inactive, completed)
-- Manage project designations
-- Assign designations to users within projects
 
-### Designation Management (Admin Only)
-- Create job roles/designations
-- Update designation information
-- Delete designations
-- Assign designations to projects
-- Set user designations within projects
 
 ### Request Management
 - Users can request profile changes (firstName, lastName, email, password)
@@ -418,13 +396,11 @@ The frontend types align with the backend database schema:
 - `id`, `name`, `description`, `status`, `createdBy`, `createdAt`, `updatedAt`
 - Relations: Owned by admin, has assigned users, has designations
 
-### Designation
-- `id`, `name`, `description`, `createdAt`, `updatedAt`
-- Relations: Can be assigned to projects
+
 
 ### ProjectUser (Join Table)
-- `id`, `projectId`, `userId`, `designationId`, `assignedAt`
-- Links users to projects with optional designations
+- `id`, `projectId`, `userId`, `assignedAt`
+- Links users to projects
 
 ### UserRequest
 - `id`, `userId`, `adminId`, `requestType`, `currentValue`, `requestedValue`, `status`, `createdAt`, `updatedAt`
@@ -442,8 +418,8 @@ The frontend types align with the backend database schema:
 ```typescript
 adminKeys: ['admins', 'list', { id }]
 userKeys: ['users', 'list', { id }]
-projectKeys: ['projects', 'list', { id }, 'designations']
-designationKeys: ['designations', 'list', { id }]
+projectKeys: ['projects', 'list', { id }]
+
 requestKeys: ['requests', 'my-requests', 'admin-requests', { id }]
 ```
 
@@ -463,17 +439,9 @@ This project is part of the Rooeel application suite.
 
 ## 🆕 Recent Updates
 
-### Project-Designation Features
-- Added ability to assign designations to specific projects
-- Users can have different designations in different projects
-- Project designation management UI
-- User designation badges in project cards
-
 ### Enhanced Components
-- `ProjectDesignationManager`: Manage project designations and user assignments
-- `ProjectCard`: Display user designations as badges
-- `Badge`: Added secondary variant for designation display
+- `ProjectCard`: Display user information clearly
 
 ### API Service Enhancements
-- `projectService`: Added 5 new methods for designation management
-- `useProjects`: Added 5 new React Query hooks for designation operations
+- `projectService`: Added methods for user assignment
+- `useProjects`: Added React Query hooks for project operations

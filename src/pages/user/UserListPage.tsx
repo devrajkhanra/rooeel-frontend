@@ -6,9 +6,10 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
-import { Trash2, UserPlus, ChevronUp } from 'lucide-react';
+import { Trash2, UserPlus, ChevronUp, KeyRound } from 'lucide-react';
 import { formatDate, formatName } from '@/utils/format';
 import { CreateUserForm } from '@/components/admin/CreateUserForm';
+import { ResetPasswordModal } from '@/components/user/ResetPasswordModal';
 import type { User } from '@/types/api.types';
 
 export const UserListPage: React.FC = () => {
@@ -16,8 +17,7 @@ export const UserListPage: React.FC = () => {
     const { data: users, isLoading: usersLoading, error: usersError } = useUsers();
     const deleteUser = useDeleteUser();
     const [showCreateForm, setShowCreateForm] = useState(false);
-
-
+    const [resetPasswordUser, setResetPasswordUser] = useState<User | null>(null);
 
     const isAdmin = currentUser?.role === 'admin';
 
@@ -149,21 +149,41 @@ export const UserListPage: React.FC = () => {
                                 </TableCell>
                                 {isAdmin && (
                                     <TableCell className="text-right">
-                                        <Button
-                                            variant="danger"
-                                            size="sm"
-                                            leftIcon={<Trash2 className="h-4 w-4" />}
-                                            onClick={() => handleDelete(user.id)}
-                                            isLoading={deleteUser.isPending}
-                                        >
-                                            Delete
-                                        </Button>
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                leftIcon={<KeyRound className="h-4 w-4" />}
+                                                onClick={() => setResetPasswordUser(user)}
+                                                title="Reset Password"
+                                            >
+                                                Password
+                                            </Button>
+                                            <Button
+                                                variant="danger"
+                                                size="sm"
+                                                leftIcon={<Trash2 className="h-4 w-4" />}
+                                                onClick={() => handleDelete(user.id)}
+                                                isLoading={deleteUser.isPending}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 )}
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
+            )}
+
+            {/* Reset Password Modal */}
+            {resetPasswordUser && (
+                <ResetPasswordModal
+                    user={resetPasswordUser}
+                    isOpen={!!resetPasswordUser}
+                    onClose={() => setResetPasswordUser(null)}
+                />
             )}
         </div>
     );

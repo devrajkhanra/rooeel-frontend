@@ -1,17 +1,18 @@
 import { apiClient } from './api.client';
-import type { Admin, UpdateAdminDto } from '@/types/api.types';
+import type { Admin, CreateAdminDto, UpdateAdminDto } from '@/types/api.types';
 
 
 /**
  * Admin Service
  * 
  * Provides CRUD operations for admin management.
- * 
- * NOTE: Admins can ONLY be created through the /auth/signup endpoint.
- * Direct admin creation via /admin endpoint is not available for security reasons.
- * Use authService.signup() to create new admins.
  */
 export const adminService = {
+    // Create new admin (admin only)
+    createAdmin: async (data: CreateAdminDto): Promise<Admin> => {
+        const response = await apiClient.post<Admin>('/admin', data);
+        return response.data;
+    },
     // Get all admins
     getAllAdmins: async (): Promise<Admin[]> => {
         const response = await apiClient.get<Admin[]>('/admin');

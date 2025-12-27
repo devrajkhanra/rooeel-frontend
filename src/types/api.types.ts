@@ -45,6 +45,10 @@ export interface UpdateUserDto {
     password?: string;
 }
 
+export interface ResetPasswordDto {
+    password: string;
+}
+
 // Request Management Types
 export type RequestType = 'firstName' | 'lastName' | 'email' | 'password';
 export type RequestStatus = 'pending' | 'approved' | 'rejected';
@@ -66,8 +70,7 @@ export interface UserRequest {
 
 export interface CreateRequestDto {
     requestType: RequestType;
-    requestedValue: string;
-    currentPassword?: string; // Required for password changes
+    requestedValue?: string; // Optional for password changes per README
 }
 
 export interface ApiResponse<T> {
@@ -104,15 +107,6 @@ export interface ProjectUser {
     assignedAt: string;
     // Nested user data from backend
     user?: User;
-    designation?: Designation;
-}
-
-export interface Designation {
-    id: number;
-    name: string;
-    description?: string;
-    createdAt: string;
-    updatedAt: string;
 }
 
 export interface CreateProjectDto {

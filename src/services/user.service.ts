@@ -1,5 +1,5 @@
 import { apiClient } from './api.client';
-import type { User, CreateUserDto, UpdateUserDto } from '@/types/api.types';
+import type { User, CreateUserDto, UpdateUserDto, ResetPasswordDto } from '@/types/api.types';
 
 
 /**
@@ -30,6 +30,12 @@ export const userService = {
     // Update user
     updateUser: async (id: number, data: UpdateUserDto): Promise<User> => {
         const response = await apiClient.patch<User>(`/user/${id}`, data);
+        return response.data;
+    },
+
+    // Reset user password (admin only)
+    resetPassword: async (id: number, data: ResetPasswordDto): Promise<User> => {
+        const response = await apiClient.patch<User>(`/user/${id}/reset-password`, data);
         return response.data;
     },
 

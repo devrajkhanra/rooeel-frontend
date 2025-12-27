@@ -27,15 +27,43 @@ export const authService = {
     // Admin Login
     login: async (credentials: LoginCredentials): Promise<{ user: AuthUser; token: string }> => {
         logger.info(`AuthService: Attempting login for ${credentials.email} as ${credentials.role}`);
-        const response = await apiClient.post<AuthResponse>('/auth/login', credentials);
-        const { access_token, user } = response.data;
+        const response = await apiClient.post<any>('/auth/login', credentials);
+        const { access_token } = response.data;
+
+        let userData = response.data.user || response.data.admin;
+
+        // If user data is missing from response, try to decode it from token
+        if (!userData) {
+            try {
+                const decoded: any = jwtDecode(access_token);
+                logger.debug('AuthService: Decoded token payload', decoded);
+
+                userData = {
+                    id: decoded.sub, // 'sub' usually holds the ID
+                    email: decoded.email,
+                    role: decoded.role,
+                    firstName: decoded.firstName || 'User', // Fallback as these might not be in token
+                    lastName: decoded.lastName || '',
+                };
+            } catch (e) {
+                logger.error('AuthService: Failed to decode token for user data', e);
+                // Fallback to minimal data if decoding fails
+                userData = {
+                    id: 0,
+                    email: credentials.email,
+                    role: credentials.role,
+                    firstName: 'User',
+                    lastName: '',
+                };
+            }
+        }
 
         const authUser: AuthUser = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            role: user.role,
+            id: userData.id,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            role: userData.role,
         };
 
         // Store in localStorage

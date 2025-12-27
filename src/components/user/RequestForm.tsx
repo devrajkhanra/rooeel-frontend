@@ -41,7 +41,14 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
         try {
             setError(null);
             setSuccess(null);
-            await createRequest.mutateAsync(data);
+
+            // Clean up payload
+            const payload = {
+                requestType: data.requestType,
+                requestedValue: data.requestedValue || undefined,
+            };
+
+            await createRequest.mutateAsync(payload as RequestFormData);
             setSuccess('Request submitted successfully! Your admin will review it.');
             reset();
             onSuccess?.();
@@ -74,16 +81,6 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
                     fullError += ` (Status: ${statusCode})`;
                 }
             }
-
-            // Log comprehensive error information
-            console.error('=== REQUEST CREATION ERROR ===');
-            console.error('Status:', statusCode);
-            console.error('Message:', errorMessage);
-            console.error('Details:', errorDetails);
-            console.error('Is Admin Assignment Error:', isAdminAssignmentError);
-            console.error('Full Response:', err?.response?.data);
-            console.error('Request Payload:', data);
-            console.error('============================');
 
             setError(fullError);
         }
@@ -141,22 +138,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({ onSuccess }) => {
                 {...register('requestedValue')}
             />
 
-            {isPasswordRequest && (
-                <Input
-                    label="Current Password"
-                    type="password"
-                    placeholder="Enter your current password"
-                    helperText="Required to verify your identity"
-                    leftIcon={<Lock className="h-4 w-4" />}
-                    error={errors.currentPassword?.message}
-                    {...register('currentPassword')}
-                />
-            )}
+
 
             <div className="p-3 rounded-md bg-[var(--color-info)]/10 border border-[var(--color-info)]/20">
                 <p className="text-xs text-[var(--color-text-secondary)]">
                     <strong>Note:</strong> Your request will be sent to your admin for approval.
-                    {isPasswordRequest && ' Password change requests cannot be approved by admins for security reasons.'}
+                    {isPasswordRequest && ' Password change requests will be reviewed by your admin.'}
                 </p>
             </div>
 

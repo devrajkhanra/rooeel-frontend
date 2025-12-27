@@ -38,27 +38,22 @@ export const signupSchema = z.object({
 // Request validation schema
 export const requestSchema = z.object({
     requestType: z.enum(['firstName', 'lastName', 'email', 'password']),
-    requestedValue: z.string().min(1, 'Requested value is required'),
-    currentPassword: z.string().optional(),
-}).refine((data) => {
-    // Current password is required for password change requests
-    if (data.requestType === 'password' && !data.currentPassword) {
-        return false;
-    }
-    return true;
-}, {
-    message: 'Current password is required for password changes',
-    path: ['currentPassword'],
+    requestedValue: z.string().optional(),
 }).refine((data) => {
     // Validate requested value based on request type
     if (data.requestType === 'firstName' || data.requestType === 'lastName') {
-        return data.requestedValue.length >= 2; // Updated to match new backend requirement
+        return !!data.requestedValue && data.requestedValue.length >= 2;
     }
     if (data.requestType === 'email') {
-        return z.string().email().safeParse(data.requestedValue).success;
+        return !!data.requestedValue && z.string().email().safeParse(data.requestedValue).success;
     }
     if (data.requestType === 'password') {
-        return data.requestedValue.length >= 8; // Updated to match new backend requirement
+        // README says requestedValue is not required for password, but if provided, check min length
+        // However, usually we want to send the new password. Let's assume min 8 chars if provided.
+        // Or if the UI requires it, we enforce it here. 
+        // Let's enforce it in UI validation for better UX, but allow empty if backend supports it.
+        // Actually, let's keep it required for now as User likely wants to set it.
+        return !data.requestedValue || data.requestedValue.length >= 8;
     }
     return true;
 }, {

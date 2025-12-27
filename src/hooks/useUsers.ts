@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { userService } from '@/services/user.service';
-import type { CreateUserDto, UpdateUserDto } from '@/types/api.types';
+import type { CreateUserDto, UpdateUserDto, ResetPasswordDto } from '@/types/api.types';
 import { QUERY_KEYS } from '@/config/constants';
 
 // Fetch all users
@@ -55,5 +55,13 @@ export const useDeleteUser = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.USERS] });
         },
+    });
+};
+
+// Reset password mutation
+export const useResetPassword = () => {
+    return useMutation({
+        mutationFn: ({ id, data }: { id: number; data: ResetPasswordDto }) =>
+            userService.resetPassword(id, data),
     });
 };

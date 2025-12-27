@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, FileText, ClipboardList, Folder, LayoutDashboard, X } from 'lucide-react';
+import { Users, FileText, ClipboardList, Folder, LayoutDashboard, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAuth } from '@/hooks/useAuth';
 

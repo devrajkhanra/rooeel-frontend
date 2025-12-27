@@ -8,30 +8,39 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { showToast } from '@/utils/toast';
+import { logger } from '@/utils/logger';
 
 export const LoginPage: React.FC = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [role, setRole] = useState<'admin' | 'user'>('user');
     const [isLoading, setIsLoading] = useState(false);
 
     const {
         register,
         handleSubmit,
+        setValue,
+        watch,
         formState: { errors },
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
+        defaultValues: {
+            role: 'user',
+        },
     });
 
+    const role = watch('role');
+
     const onSubmit = async (data: LoginFormData) => {
+        logger.info('LoginPage: Submitting login form', { role: data.role });
         try {
             setIsLoading(true);
-            // Pass role with credentials to unified login endpoint
-            await login({ ...data, role });
+            await login(data);
             showToast.success('Welcome back!');
             navigate('/dashboard');
         } catch (err: any) {
-            showToast.error(err?.response?.data?.message || 'Invalid credentials');
+            const message = err?.response?.data?.message || 'Invalid credentials';
+            logger.error('LoginPage: Login failed', message);
+            showToast.error(message);
         } finally {
             setIsLoading(false);
         }
@@ -42,35 +51,35 @@ export const LoginPage: React.FC = () => {
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-primary)] mb-4">
-                        <span className="text-black font-bold text-xl">R</span>
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-[var(--color-primary)] text-white mb-4 shadow-lg shadow-[var(--color-primary)]/20 animate-fade-in">
+                        <span className="font-bold text-xl">R</span>
                     </div>
                     <h1 className="text-2xl font-bold mb-2">Welcome to Rooeel</h1>
                     <p className="text-[var(--color-text-secondary)]">Sign in to your account</p>
                 </div>
 
                 {/* Login Form */}
-                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg p-8">
+                <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-8 shadow-sm">
                     {/* Role Selection */}
                     <div className="mb-6">
                         <label className="block text-sm font-medium mb-3">Sign in as</label>
                         <div className="grid grid-cols-2 gap-3">
                             <button
                                 type="button"
-                                onClick={() => setRole('user')}
-                                className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'user'
-                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
+                                onClick={() => setValue('role', 'user')}
+                                className={`px-4 py-2.5 rounded-lg border-2 transition-all duration-200 ${role === 'user'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">User</p>
                             </button>
                             <button
                                 type="button"
-                                onClick={() => setRole('admin')}
-                                className={`px-4 py-2.5 rounded-lg border-2 transition-all ${role === 'admin'
-                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-text)]'
-                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] bg-[var(--color-surface-hover)]'
+                                onClick={() => setValue('role', 'admin')}
+                                className={`px-4 py-2.5 rounded-lg border-2 transition-all duration-200 ${role === 'admin'
+                                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/30 text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-hover)]'
                                     }`}
                             >
                                 <p className="font-medium text-sm">Admin</p>

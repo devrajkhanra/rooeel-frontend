@@ -4,6 +4,7 @@ import { LogOut, User, ChevronDown, Sun, Moon, Menu } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Breadcrumbs, type BreadcrumbItem } from '@/components/ui/Breadcrumbs';
+import { NotificationBell } from '@/components/admin/NotificationBell';
 
 const getBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
     const paths = pathname.split('/').filter(Boolean);
@@ -67,6 +68,8 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1 md:gap-2">
+                    <NotificationBell />
+
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}

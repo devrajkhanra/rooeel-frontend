@@ -28,8 +28,9 @@ export const requestService = {
 
     // Get requests from admin's users (admin only)
     getAdminRequests: async (): Promise<UserRequest[]> => {
-        const response = await apiClient.get<UserRequest[]>('/request/admin');
-        return response.data;
+        const response = await apiClient.get<any>('/request/admin');
+        // Handle wrapped response format { data: [...] }
+        return response.data?.data || response.data;
     },
 
     // Get a specific request by ID

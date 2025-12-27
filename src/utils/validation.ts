@@ -74,20 +74,6 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type RequestFormData = z.infer<typeof requestSchema>;
 
-// Designation validation
-export const createDesignationSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must not exceed 100 characters'),
-    description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must not exceed 500 characters').optional().or(z.literal('')),
-});
-
-export const updateDesignationSchema = z.object({
-    name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must not exceed 100 characters').optional(),
-    description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must not exceed 500 characters').optional().or(z.literal('')),
-});
-
-export type CreateDesignationFormData = z.infer<typeof createDesignationSchema>;
-export type UpdateDesignationFormData = z.infer<typeof updateDesignationSchema>;
-
 // Project validation schema
 export const projectSchema = z.object({
     name: z.string().min(3, 'Project name must be at least 3 characters').max(100, 'Project name too long'),

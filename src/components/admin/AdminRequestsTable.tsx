@@ -80,7 +80,7 @@ export const AdminRequestsTable: React.FC<AdminRequestsTableProps> = ({ requests
             <TableHeader>
                 <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>User ID</TableHead>
+                    <TableHead>User</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Current Value</TableHead>
                     <TableHead>Requested Value</TableHead>
@@ -101,7 +101,14 @@ export const AdminRequestsTable: React.FC<AdminRequestsTableProps> = ({ requests
                                 #{request.id}
                             </TableCell>
                             <TableCell className="text-[var(--color-text-secondary)]">
-                                #{request.userId}
+                                <div>
+                                    {request.user ? (
+                                        <div className="font-medium text-[var(--color-text-primary)]">
+                                            {request.user.firstName} {request.user.lastName}
+                                        </div>
+                                    ) : null}
+                                    <div className="text-xs">ID: {request.userId}</div>
+                                </div>
                             </TableCell>
                             <TableCell>
                                 <span className="font-medium">

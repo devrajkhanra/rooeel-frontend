@@ -13,7 +13,6 @@ import { UserProjectsPage } from './pages/user/UserProjectsPage';
 import { AdminEditPage } from './pages/admin/AdminEditPage';
 import { AdminRequestsPage } from './pages/admin/AdminRequestsPage';
 import { AdminProjectsPage } from './pages/admin/AdminProjectsPage';
-import { AdminDesignationsPage } from './pages/admin/AdminDesignationsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Create a client
@@ -48,7 +47,6 @@ function App() {
                 <Route path="/admin/:id/edit" element={<AdminEditPage />} />
                 <Route path="/admin/requests" element={<AdminRequestsPage />} />
                 <Route path="/admin/projects" element={<AdminProjectsPage />} />
-                <Route path="/admin/designations" element={<AdminDesignationsPage />} />
               </Route>
             </Route>
 

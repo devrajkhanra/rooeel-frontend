@@ -7,7 +7,6 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ProjectList } from '@/components/project/ProjectList';
 import { ProjectForm } from '@/components/project/ProjectForm';
 import { UserAssignmentModal } from '@/components/project/UserAssignmentModal';
-import { ProjectDesignationManager } from '@/components/project/ProjectDesignationManager';
 import { showToast } from '@/utils/toast';
 import type { Project } from '@/types/api.types';
 
@@ -219,14 +218,6 @@ export const AdminProjectsPage: React.FC = () => {
                                         </p>
                                     </div>
                                 )}
-                            </div>
-
-                            {/* Designation Management Section */}
-                            <div>
-                                <h3 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-3">
-                                    Manage Designations
-                                </h3>
-                                <ProjectDesignationManager project={selectedProject} />
                             </div>
                         </div>
 

@@ -50,34 +50,4 @@ export const projectService = {
         const response = await apiClient.delete<{ assignedUsers: string[] }>(`/project/${projectId}/remove-user/${userId}`);
         return response.data;
     },
-
-    // Assign designation to project (admin only)
-    assignDesignationToProject: async (projectId: number, designationId: number): Promise<{ message: string }> => {
-        const response = await apiClient.post<{ message: string }>(`/project/${projectId}/assign-designation`, { designationId });
-        return response.data;
-    },
-
-    // Remove designation from project (admin only)
-    removeDesignationFromProject: async (projectId: number, designationId: number): Promise<{ message: string }> => {
-        const response = await apiClient.delete<{ message: string }>(`/project/${projectId}/remove-designation/${designationId}`);
-        return response.data;
-    },
-
-    // Get all designations assigned to a project
-    getProjectDesignations: async (projectId: number): Promise<any[]> => {
-        const response = await apiClient.get<any[]>(`/project/${projectId}/designations`);
-        return response.data;
-    },
-
-    // Set user designation within a project (admin only)
-    setUserDesignation: async (projectId: number, userId: number, designationId: number): Promise<any> => {
-        const response = await apiClient.patch<any>(`/project/${projectId}/user/${userId}/designation`, { designationId });
-        return response.data;
-    },
-
-    // Remove user designation from project (admin only)
-    removeUserDesignation: async (projectId: number, userId: number): Promise<any> => {
-        const response = await apiClient.delete<any>(`/project/${projectId}/user/${userId}/designation`);
-        return response.data;
-    },
 };

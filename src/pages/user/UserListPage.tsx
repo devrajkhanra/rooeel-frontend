@@ -1,86 +1,25 @@
 import React, { useState } from 'react';
 import { useUsers, useDeleteUser } from '@/hooks/useUsers';
-import { useProjects, useSetUserDesignation, useRemoveUserDesignation } from '@/hooks/useProjects';
-import { useDesignations } from '@/hooks/useDesignations';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
-import { Trash2, UserPlus, ChevronUp, Briefcase, ChevronDown, ChevronRight, X } from 'lucide-react';
+import { Trash2, UserPlus, ChevronUp } from 'lucide-react';
 import { formatDate, formatName } from '@/utils/format';
 import { CreateUserForm } from '@/components/admin/CreateUserForm';
-import type { User, Project } from '@/types/api.types';
+import type { User } from '@/types/api.types';
 
 export const UserListPage: React.FC = () => {
     const { user: currentUser } = useAuth();
     const { data: users, isLoading: usersLoading, error: usersError } = useUsers();
-    const { data: projects, isLoading: projectsLoading } = useProjects();
-    const { data: allDesignations } = useDesignations();
     const deleteUser = useDeleteUser();
-    const setUserDesignation = useSetUserDesignation();
-    const removeUserDesignation = useRemoveUserDesignation();
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
+
+
 
     const isAdmin = currentUser?.role === 'admin';
-
-    // Helper function to get projects a user is assigned to
-    const getUserProjects = (userId: number): Project[] => {
-        if (!projects) return [];
-        return projects.filter(project =>
-            project.users?.some(pu => pu.userId === userId)
-        );
-    };
-
-    // Helper function to get unique designations for a user across all projects
-    const getUserDesignations = (userId: number): string[] => {
-        if (!projects) return [];
-        const designations = new Set<string>();
-        projects.forEach(project => {
-            project.users?.forEach(pu => {
-                if (pu.userId === userId && pu.designation) {
-                    designations.add(pu.designation.name);
-                }
-            });
-        });
-        return Array.from(designations);
-    };
-
-    // Get user's designation for a specific project
-    const getUserDesignationInProject = (userId: number, projectId: number) => {
-        const project = projects?.find(p => p.id === projectId);
-        const projectUser = project?.users?.find(pu => pu.userId === userId);
-        return projectUser?.designation;
-    };
-
-    // Get designations assigned to a specific project
-    // NOTE: Currently returns all designations. In production, this should fetch
-    // project-specific designations from the backend API endpoint:
-    // GET /project/:id/designations
-    const getProjectDesignations = (projectId: number) => {
-        // TODO: Implement proper project-designation fetching
-        // For now, return all designations to allow assignment
-        // The backend will validate if the designation is assigned to the project
-        return allDesignations || [];
-    };
-
-    const handleSetDesignation = async (projectId: number, userId: number, designationId: number) => {
-        try {
-            await setUserDesignation.mutateAsync({ projectId, userId, designationId });
-        } catch (error) {
-            alert('Failed to set designation');
-        }
-    };
-
-    const handleRemoveDesignation = async (projectId: number, userId: number) => {
-        try {
-            await removeUserDesignation.mutateAsync({ projectId, userId });
-        } catch (error) {
-            alert('Failed to remove designation');
-        }
-    };
 
     const handleDelete = async (id: number) => {
         if (window.confirm('Are you sure you want to delete this user?')) {
@@ -96,13 +35,7 @@ export const UserListPage: React.FC = () => {
         setShowCreateForm(false);
     };
 
-    const toggleExpand = (userId: number) => {
-        setExpandedUserId(expandedUserId === userId ? null : userId);
-    };
-
-    const isLoading = usersLoading || projectsLoading;
-
-    if (isLoading) {
+    if (usersLoading) {
         return (
             <div className="p-6">
                 <div className="mb-6">
@@ -189,181 +122,46 @@ export const UserListPage: React.FC = () => {
                             <TableHead>ID</TableHead>
                             <TableHead>Name</TableHead>
                             <TableHead>Email</TableHead>
-                            <TableHead>Projects</TableHead>
-                            <TableHead>Designations</TableHead>
                             <TableHead>Created</TableHead>
                             <TableHead>Status</TableHead>
                             {isAdmin && <TableHead className="text-right">Actions</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users?.map((user: User) => {
-                            const userProjects = getUserProjects(user.id);
-                            const userDesignations = getUserDesignations(user.id);
-                            const isExpanded = expandedUserId === user.id;
-
-                            return (
-                                <React.Fragment key={user.id}>
-                                    <TableRow>
-                                        <TableCell className="font-medium text-[var(--color-text-secondary)]">
-                                            #{user.id}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="font-medium text-[var(--color-text-primary)]">
-                                                {formatName(user.firstName, user.lastName)}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="text-[var(--color-text-secondary)]">
-                                            {user.email}
-                                        </TableCell>
-                                        <TableCell>
-                                            {userProjects.length > 0 ? (
-                                                <div className="flex items-center gap-2">
-                                                    <Badge variant="info" className="gap-1">
-                                                        <Briefcase className="h-3 w-3" />
-                                                        {userProjects.length} {userProjects.length === 1 ? 'Project' : 'Projects'}
-                                                    </Badge>
-                                                    {isAdmin && (
-                                                        <button
-                                                            onClick={() => toggleExpand(user.id)}
-                                                            className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                                                            title={isExpanded ? 'Collapse' : 'Expand to manage designations'}
-                                                        >
-                                                            {isExpanded ? (
-                                                                <ChevronDown className="h-4 w-4" />
-                                                            ) : (
-                                                                <ChevronRight className="h-4 w-4" />
-                                                            )}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            ) : (
-                                                <span className="text-sm text-[var(--color-text-secondary)]">Not Assigned</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {userDesignations.length > 0 ? (
-                                                <div className="flex flex-wrap gap-1">
-                                                    {userDesignations.map((designation, index) => (
-                                                        <Badge key={index} variant="secondary">
-                                                            {designation}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <span className="text-sm text-[var(--color-text-secondary)]">-</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="text-[var(--color-text-secondary)]">
-                                            {formatDate(user.createdAt)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="success">Active</Badge>
-                                        </TableCell>
-                                        {isAdmin && (
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="danger"
-                                                    size="sm"
-                                                    leftIcon={<Trash2 className="h-4 w-4" />}
-                                                    onClick={() => handleDelete(user.id)}
-                                                    isLoading={deleteUser.isPending}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-
-                                    {/* Expanded Row - Project Designation Management */}
-                                    {isExpanded && isAdmin && userProjects.length > 0 && (
-                                        <TableRow className="bg-[var(--color-surface-secondary)]">
-                                            <TableCell colSpan={8} className="p-0">
-                                                <div className="px-6 py-4 space-y-3">
-                                                    <h4 className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
-                                                        Manage Designations for {user.firstName}
-                                                    </h4>
-                                                    {userProjects.map((project) => {
-                                                        const currentDesignation = getUserDesignationInProject(user.id, project.id);
-                                                        const availableDesignations = getProjectDesignations(project.id);
-
-                                                        return (
-                                                            <div
-                                                                key={project.id}
-                                                                className="flex items-center justify-between p-3 bg-[var(--color-surface)] rounded-lg border border-[var(--color-border)]"
-                                                            >
-                                                                <div className="flex-1">
-                                                                    <p className="font-medium text-sm">{project.name}</p>
-                                                                    <p className="text-xs text-[var(--color-text-secondary)]">
-                                                                        {project.description || 'No description'}
-                                                                    </p>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    {currentDesignation ? (
-                                                                        <>
-                                                                            <Badge variant="secondary">
-                                                                                {currentDesignation.name}
-                                                                            </Badge>
-                                                                            <select
-                                                                                value=""
-                                                                                onChange={(e) => {
-                                                                                    const designationId = Number(e.target.value);
-                                                                                    if (designationId) {
-                                                                                        handleSetDesignation(project.id, user.id, designationId);
-                                                                                    }
-                                                                                }}
-                                                                                className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                                                                                disabled={setUserDesignation.isPending}
-                                                                            >
-                                                                                <option value="">Change...</option>
-                                                                                {availableDesignations
-                                                                                    .filter((d: any) => d.id !== currentDesignation.id)
-                                                                                    .map((d: any) => (
-                                                                                        <option key={d.id} value={d.id}>
-                                                                                            {d.name}
-                                                                                        </option>
-                                                                                    ))}
-                                                                            </select>
-                                                                            <button
-                                                                                onClick={() => handleRemoveDesignation(project.id, user.id)}
-                                                                                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-error)] transition-colors"
-                                                                                title="Remove designation"
-                                                                                disabled={removeUserDesignation.isPending}
-                                                                            >
-                                                                                <X className="h-4 w-4" />
-                                                                            </button>
-                                                                        </>
-                                                                    ) : (
-                                                                        <select
-                                                                            value=""
-                                                                            onChange={(e) => {
-                                                                                const designationId = Number(e.target.value);
-                                                                                if (designationId) {
-                                                                                    handleSetDesignation(project.id, user.id, designationId);
-                                                                                }
-                                                                            }}
-                                                                            className="px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)] rounded text-sm text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                                                                            disabled={setUserDesignation.isPending}
-                                                                        >
-                                                                            <option value="">Assign designation...</option>
-                                                                            {availableDesignations.map((d: any) => (
-                                                                                <option key={d.id} value={d.id}>
-                                                                                    {d.name}
-                                                                                </option>
-                                                                            ))}
-                                                                        </select>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    )}
-                                </React.Fragment>
-                            );
-                        })}
+                        {users?.map((user: User) => (
+                            <TableRow key={user.id}>
+                                <TableCell className="font-medium text-[var(--color-text-secondary)]">
+                                    #{user.id}
+                                </TableCell>
+                                <TableCell>
+                                    <div className="font-medium text-[var(--color-text-primary)]">
+                                        {formatName(user.firstName, user.lastName)}
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-[var(--color-text-secondary)]">
+                                    {user.email}
+                                </TableCell>
+                                <TableCell className="text-[var(--color-text-secondary)]">
+                                    {formatDate(user.createdAt)}
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="success">Active</Badge>
+                                </TableCell>
+                                {isAdmin && (
+                                    <TableCell className="text-right">
+                                        <Button
+                                            variant="danger"
+                                            size="sm"
+                                            leftIcon={<Trash2 className="h-4 w-4" />}
+                                            onClick={() => handleDelete(user.id)}
+                                            isLoading={deleteUser.isPending}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </TableCell>
+                                )}
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             )}

@@ -58,19 +58,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) =>
                         </div>
                     )}
                 </div>
-
-                {/* User Designations */}
-                {project.users && project.users.some(u => u.designation) && (
-                    <div className="flex flex-wrap gap-1.5 pt-2">
-                        {project.users
-                            .filter(u => u.designation)
-                            .map(u => (
-                                <Badge key={u.id} variant="secondary" className="text-xs">
-                                    {u.user?.firstName} - {u.designation?.name}
-                                </Badge>
-                            ))}
-                    </div>
-                )}
             </div>
 
             {/* Hover indicator */}

@@ -1,4 +1,4 @@
-import { Link, Outlet } from '@tanstack/react-router';
+import { Link, Outlet, useNavigate, useLocation } from '@tanstack/react-router';
 import {
   LayoutDashboard,
   Folder,
@@ -8,20 +8,52 @@ import {
   LogOut,
   Bell,
   Settings,
-  HelpCircle as HelpIcon,
-  LogOut as LogOutIcon,
   Search,
-  Menu,
 } from 'lucide-react';
+import { useAuthStore } from '../../store/useAuthStore';
+import { graphQLClient } from '../../lib/graphql-client';
+import { LOGOUT_MUTATION } from '../../lib/graphql/auth.operations';
+
+const NAV_ITEMS = [
+  { label: 'Dashboard', to: '#', icon: LayoutDashboard },
+  { label: 'Projects', to: '/projects', icon: Folder },
+  { label: 'Procurement', to: '#', icon: ShoppingCart },
+  { label: 'Financials', to: '#', icon: LineChart },
+  { label: 'Analytics', to: '#', icon: LineChart },
+];
+
+const RESOURCE_ITEMS = [
+  { label: 'Support', to: '#', icon: HelpCircle },
+];
 
 export function DashboardLayout() {
+  const { user, refreshToken, logout } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    if (refreshToken) {
+      try {
+        await graphQLClient.request(LOGOUT_MUTATION, { input: { refreshToken } });
+      } catch {
+        // Silent — still clear local state
+      }
+    }
+    logout();
+    navigate({ to: '/' });
+  };
+
+  const userInitials = user
+    ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+    : 'U';
+
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
       {/* Sidebar */}
       <aside className="w-[240px] flex-shrink-0 border-r border-slate-200 bg-[#F8FAFC] flex flex-col">
         {/* Branding */}
         <div className="flex items-center gap-3 border-b border-slate-200 px-6 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-[#002b85] font-bold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded bg-[#002b85] font-bold text-white text-sm">
             E
           </div>
           <div>
@@ -33,52 +65,60 @@ export function DashboardLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1 p-3">
-          <div className="mb-2 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+        <nav className="flex-1 space-y-0.5 p-3 overflow-y-auto">
+          <p className="mb-1 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
             Operations
-          </div>
-          <Link to="#" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
-          <Link to="/projects" className="flex items-center gap-3 rounded-md bg-[#E2E8F0] px-3 py-2 text-[14px] font-medium text-[#002b85] transition-colors">
-            <Folder className="h-4 w-4" />
-            Projects
-          </Link>
-          <Link to="#" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-            <ShoppingCart className="h-4 w-4" />
-            Procurement
-          </Link>
-          <Link to="#" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-            <LineChart className="h-4 w-4" />
-            Financials
-          </Link>
-          <Link to="#" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-            <LineChart className="h-4 w-4" />
-            Analytics
-          </Link>
+          </p>
+          {NAV_ITEMS.map(({ label, to, icon: Icon }) => {
+            const isActive =
+              to !== '#' &&
+              (location.pathname === to || location.pathname.startsWith(to + '/'));
+            return (
+              <Link
+                key={label}
+                to={to as any}
+                className={`flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium transition-colors ${
+                  isActive
+                    ? 'bg-[#E2E8F0] text-[#002b85]'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                {label}
+              </Link>
+            );
+          })}
 
-          <div className="mt-8 mb-2 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+          <p className="mt-6 mb-1 px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
             Resources
-          </div>
-          <Link to="#" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-            <HelpCircle className="h-4 w-4" />
-            Support
-          </Link>
-          <Link to="/" className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          </p>
+          {RESOURCE_ITEMS.map(({ label, to, icon: Icon }) => (
+            <Link
+              key={label}
+              to={to as any}
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          ))}
+
+          <button
+            id="sidebar-logout"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-[14px] font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+          >
             <LogOut className="h-4 w-4" />
             Sign Out
-          </Link>
+          </button>
         </nav>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex flex-1 flex-col">
+      {/* Main Content */}
+      <main className="flex flex-1 flex-col min-w-0">
         {/* Top Header */}
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-          <div className="flex items-center gap-4 text-slate-500">
-            <Menu className="h-5 w-5 cursor-pointer" />
-          </div>
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6 flex-shrink-0">
+          <div />
           <div className="flex items-center gap-6">
             <div className="relative flex items-center">
               <Search className="absolute left-3 h-4 w-4 text-slate-400" />
@@ -91,19 +131,28 @@ export function DashboardLayout() {
             <div className="flex items-center gap-4 text-slate-500">
               <Bell className="h-5 w-5 cursor-pointer hover:text-slate-900" />
               <Settings className="h-5 w-5 cursor-pointer hover:text-slate-900" />
-              <HelpIcon className="h-5 w-5 cursor-pointer hover:text-slate-900" />
+              <HelpCircle className="h-5 w-5 cursor-pointer hover:text-slate-900" />
             </div>
             <div className="flex items-center gap-3 border-l border-slate-200 pl-6">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0] text-[13px] font-bold text-slate-700">
-                DK
+              <div
+                title={user ? `${user.firstName} ${user.lastName}` : ''}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E2E8F0] text-[13px] font-bold text-slate-700 cursor-default"
+              >
+                {userInitials}
               </div>
-              <LogOutIcon className="h-5 w-5 cursor-pointer text-slate-500 hover:text-slate-900" />
+              <button
+                onClick={handleLogout}
+                title="Sign out"
+                className="text-slate-500 hover:text-slate-900 transition-colors"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 overflow-auto p-8">
           <Outlet />
         </div>
       </main>

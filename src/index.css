@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Surface & Background Colors */
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #cbdbf5;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-high: #dce9ff;
+  --color-surface-container-highest: #d3e4fe;
+  
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #444653;
+  --color-background: #f8f9ff;
+  --color-on-background: #0b1c30;
+  
+  /* Primary Colors */
+  --color-primary: #00288e;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1e40af;
+  --color-on-primary-container: #a8b8ff;
+  
+  /* Borders & Outlines */
+  --color-outline: #757684;
+  --color-outline-variant: #e2e8f0; /* Mapped to standard structural gray */
+  
+  /* Error Colors */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+
+  /* Typography Scales */
+  --text-headline-lg: 24px;
+  --text-headline-lg--line-height: 32px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  
+  --text-headline-md: 18px;
+  --text-headline-md--line-height: 24px;
+  --text-headline-md--letter-spacing: -0.01em;
+  
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
+  
+  --text-label-md: 12px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.05em;
+  
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+
+  /* Radii & Shadows */
+  --radius-sm: 0.125rem;
+  --radius-DEFAULT: 0.25rem; /* 4px standard */
+  --radius-md: 0.375rem;
+  --shadow-popover: 0px 4px 12px rgba(0,0,0,0.08);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Tabular numbers utility for data tables */
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

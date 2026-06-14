@@ -57,12 +57,19 @@ export function EditProjectModal({ project, onClose }: Props) {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/20 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/20 p-4 backdrop-blur-sm">
       <div className="w-full max-w-[480px] rounded bg-surface-container-lowest shadow-popover">
 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-outline-variant p-4">
-          <h2 className="text-headline-md font-semibold text-on-surface">Edit Project</h2>
+          <div>
+            <h2 className="text-headline-md font-semibold text-on-surface">
+              Edit Project Details
+            </h2>
+            <p className="text-label-md text-outline">
+              Update the project title and optional description.
+            </p>
+          </div>
           <button
             onClick={onClose}
             disabled={updateMutation.isPending}
@@ -72,7 +79,10 @@ export function EditProjectModal({ project, onClose }: Props) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit((v) => updateMutation.mutate(v))} className="p-4 space-y-4">
+        <form
+          onSubmit={handleSubmit((v) => updateMutation.mutate(v))}
+          className="space-y-4 p-4"
+        >
           {errors.root && (
             <p className="rounded bg-error/10 p-2 text-body-sm text-error border border-error/20">
               {errors.root.message}
@@ -86,6 +96,7 @@ export function EditProjectModal({ project, onClose }: Props) {
             <input
               type="text"
               {...register('title')}
+              placeholder="Project title"
               className="block w-full rounded border border-outline-variant p-2 text-body-sm text-on-surface outline-none transition-all placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary-container/40"
             />
             {errors.title && (
@@ -100,11 +111,12 @@ export function EditProjectModal({ project, onClose }: Props) {
             <textarea
               {...register('description')}
               rows={4}
+              placeholder="Brief project description"
               className="block w-full resize-none rounded border border-outline-variant p-2 text-body-sm text-on-surface outline-none transition-all placeholder:text-outline focus:border-primary focus:ring-2 focus:ring-primary-container/40"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-col-reverse gap-2 border-t border-outline-variant pt-4 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}

@@ -30,6 +30,25 @@ export const ATTACHMENT_DOWNLOAD_URL_QUERY = `
   }
 `;
 
+export const RENAME_ATTACHMENT_MUTATION = `
+  mutation RenameAttachment($input: RenameAttachmentInput!) {
+    renameAttachment(input: $input) {
+      id
+      documentId
+      fileName
+      contentType
+      sizeBytes
+      uploadedAt
+    }
+  }
+`;
+
+export const DELETE_ATTACHMENT_MUTATION = `
+  mutation DeleteAttachment($input: DeleteAttachmentInput!) {
+    deleteAttachment(input: $input)
+  }
+`;
+
 export const UPDATE_DOCUMENT_MUTATION = `
   mutation UpdateDocument($input: UpdateDocumentInput!) {
     updateDocument(input: $input) {

@@ -69,7 +69,9 @@ export function ProjectsList() {
       <CreateProjectModal
         isOpen={isCreateModalOpen}
         onClose={() => { setIsCreateModalOpen(false); setCreateError(null); }}
-        onCreate={(data) => createMutation.mutateAsync(data)}
+        onCreate={async (data) => {
+          await createMutation.mutateAsync(data);
+        }}
         isLoading={createMutation.isPending}
         error={createError}
       />
@@ -82,8 +84,8 @@ export function ProjectsList() {
       )}
 
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h1 className="mb-1 text-headline-lg font-semibold text-on-surface">Projects</h1>
           <p className="text-body-sm text-on-surface-variant">
             Create a project and manage its tendering phase from one controlled workspace.
@@ -92,7 +94,7 @@ export function ProjectsList() {
         <button
           id="create-project-open"
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex h-8 items-center gap-1.5 rounded bg-primary px-3 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-container"
+          className="flex h-8 w-full items-center justify-center gap-1.5 rounded bg-primary px-3 text-body-sm font-semibold text-on-primary transition-colors hover:bg-primary-container sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           Create project

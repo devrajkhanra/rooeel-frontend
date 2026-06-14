@@ -9,10 +9,13 @@ const DOCUMENT_FRAGMENT = `
   status
   attachments {
     id
+    projectId
     documentId
+    objectKey
     fileName
     contentType
     sizeBytes
+    uploadedById
     uploadedAt
   }
 `;
@@ -22,6 +25,7 @@ const STAGE_EVENT_FRAGMENT = `
   projectId
   stageId
   eventType
+  title
   eventDate
   note
   sequence
@@ -76,6 +80,14 @@ export const START_TENDER_STAGE_MUTATION = `
   }
 `;
 
+export const UPDATE_TENDER_STAGE_MUTATION = `
+  mutation UpdateTenderStage($input: UpdateTenderStageInput!) {
+    updateTenderStage(input: $input) {
+      ${STAGE_FRAGMENT}
+    }
+  }
+`;
+
 export const COMPLETE_TENDER_STAGE_MUTATION = `
   mutation CompleteTenderStage($input: UpdateTenderStageInput!) {
     completeTenderStage(input: $input) {
@@ -105,6 +117,20 @@ export const CREATE_TENDER_STAGE_EVENT_MUTATION = `
     createTenderStageEvent(input: $input) {
       ${STAGE_EVENT_FRAGMENT}
     }
+  }
+`;
+
+export const UPDATE_TENDER_STAGE_EVENT_MUTATION = `
+  mutation UpdateTenderStageEvent($input: UpdateTenderStageEventInput!) {
+    updateTenderStageEvent(input: $input) {
+      ${STAGE_EVENT_FRAGMENT}
+    }
+  }
+`;
+
+export const DELETE_TENDER_STAGE_EVENT_MUTATION = `
+  mutation DeleteTenderStageEvent($input: DeleteTenderStageEventInput!) {
+    deleteTenderStageEvent(input: $input)
   }
 `;
 

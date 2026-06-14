@@ -5,18 +5,21 @@ import {
   dashboardRoute,
   projectsRoute,
   projectDetailRoute,
+  projectConfigurationRoute,
   tenderingRoute,
+  usersRoute,
 } from './routes/projects';
 
-// Register all dashboard child routes
-dashboardRoute.addChildren([
+const dashboardRouteWithChildren = dashboardRoute.addChildren([
   projectsRoute,
   projectDetailRoute,
+  projectConfigurationRoute,
   tenderingRoute,
+  usersRoute,
 ]);
 
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   registerRoute,
-  dashboardRoute,
+  dashboardRouteWithChildren,
 ]);

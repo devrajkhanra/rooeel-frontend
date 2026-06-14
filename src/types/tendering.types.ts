@@ -34,6 +34,7 @@ export interface TenderStageEvent {
   projectId: string;
   stageId: string;
   eventType: TenderStageEventType;
+  title?: string;
   eventDate: string;
   note?: string;
   sequence: number;
@@ -80,4 +81,18 @@ export const ALLOWED_EVENT_TYPES: Record<TenderStageType, TenderStageEventType[]
   AUCTION: ['AUCTION'],
   NEGOTIATION: ['NEGOTIATION'],
   LOI_AWARDED: ['LOI_AWARDED'],
+};
+
+export const EVENT_TYPE_LABELS: Record<TenderStageEventType, string> = {
+  TENDER_RECEIVED: 'Tender Received',
+  SITE_VISIT: 'Site Visit',
+  PREBID_QUERY_SENT: 'Pre-Bid Query Sent',
+  PREBID_QUERY_RESPONSE: 'Pre-Bid Response Received',
+  TENDER_TECHNICAL_SUBMISSION: 'Technical Submission',
+  TENDER_PRICE_SUBMISSION: 'Price Submission',
+  CLARIFICATION_SENT: 'Clarification Sent',
+  CLARIFICATION_RECEIVED: 'Clarification Received',
+  AUCTION: 'Auction',
+  NEGOTIATION: 'Negotiation',
+  LOI_AWARDED: 'LOI Awarded',
 };

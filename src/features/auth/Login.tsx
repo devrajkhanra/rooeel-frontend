@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/useAuthStore';
-import { graphQLClient } from '../../lib/graphql-client';
+import { unauthenticatedGraphQLClient } from '../../lib/graphql-client';
 import { LOGIN_MUTATION } from '../../lib/graphql/auth.operations';
 import type { AuthPayload } from '../../types/auth.types';
 
@@ -30,14 +30,19 @@ export function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormValues) => {
-      const result = await graphQLClient.request<{ login: AuthPayload }>(
+      const result = await unauthenticatedGraphQLClient.request<{ login: AuthPayload }>(
         LOGIN_MUTATION,
         { input: data },
       );
       return result.login;
     },
     onSuccess: (payload) => {
-      login(payload.user, payload.accessToken, payload.refreshToken);
+      login(
+        payload.user,
+        payload.accessToken,
+        payload.refreshToken,
+        payload.expiresInSeconds,
+      );
       navigate({ to: '/projects' });
     },
     onError: (error: Error) => {
